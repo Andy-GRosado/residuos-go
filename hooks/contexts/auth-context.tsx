@@ -1,7 +1,7 @@
 // contexts/auth-context.tsx
 import { supabase } from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 interface AuthContextType {
     isAppReady: boolean;
@@ -13,7 +13,7 @@ interface AuthContextType {
     user: User | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAppReady, setIsAppReady] = useState(false);
@@ -21,7 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        // Verificar sesión activa
         const getSession = async () => {
             const {
                 data: { session },
@@ -98,10 +97,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
-    return context;
-}
+

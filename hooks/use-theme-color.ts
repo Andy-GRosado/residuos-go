@@ -18,6 +18,6 @@ export function useThemeColor(
   } else {
     const colorValue = Colors[theme][colorName];
     
-    return colorValue;
+    return colorValue as string;
   }
 }

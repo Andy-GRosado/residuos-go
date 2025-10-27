@@ -1,9 +1,11 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { ThemedText } from "./themed-text";
-import { ThemedView } from "./themed-view";
+import ThemedText from "./themed-text";
+import ThemedView from "./themed-view";
 
 export default function ThemedLogoHeader({title}: {title: string}) {
-    const backgroundColor = useThemeColor({}, 'bar_background');
+    const backgroundColor = useThemeColor({}, 'background');
+    const textColor = useThemeColor({}, 'text');
+    
     return (
         <ThemedView
             style={{
@@ -12,7 +14,7 @@ export default function ThemedLogoHeader({title}: {title: string}) {
                 backgroundColor: backgroundColor,
             }}
         >
-            <ThemedText type="title" style={{ textAlign: "center" }}>
+            <ThemedText type="title" style={{ textAlign: "center", color: textColor }}>
                 {title}
             </ThemedText>
         </ThemedView>

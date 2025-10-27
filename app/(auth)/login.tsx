@@ -1,50 +1,28 @@
 // app/(auth)/login.tsx
-import { ThemedText } from "@/app-example/components/themed-text";
-import { ThemedView } from "@/app-example/components/themed-view";
-import PasswordInput from "@/app-example/components/ui/password-input";
-import ThemedLogoHeader from "@/components/ui/themed-logo-header";
+import ThemedLogoHeaderBar from "@/components/ui/bar/themed-logo-header-bar";
+import PrimaryButton from "@/components/ui/button/primary-button";
+import EmailTextInput from "@/components/ui/input/input-email";
+import PasswordTextInput from "@/components/ui/input/input-password";
+import ThemedText from "@/components/ui/themed-text";
+import ThemedView from "@/components/ui/themed-view";
 import { Colors } from "@/constants/theme";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/utils/supabase";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, StyleSheet, TextInput, useColorScheme, View } from "react-native";
-
+import {
+    Alert,
+    Pressable,
+    StyleSheet,
+    useColorScheme,
+    View,
+} from "react-native";
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
     },
-    title: {
-        textAlign: "center",
-        paddingTop: 40,
-        paddingBottom: 40,
-    },
-    input: {
-        height: 50,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        fontSize: 16,
-        color: "#ddd",
-    },
-    button: {
-        // backgroundColor: "#265373",
-        height: 50,
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 10,
-    },
-    buttonText: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    // Nuevos estilos para botones sociales
     socialButtonsContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -59,13 +37,11 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: "#ddd",
         backgroundColor: "white",
         paddingHorizontal: 15,
         gap: 10,
     },
     socialButtonText: {
-        // color: "#202020ff",
         fontSize: 16,
         fontWeight: "600",
     },
@@ -77,11 +53,9 @@ const styles = StyleSheet.create({
     separatorLine: {
         flex: 1,
         height: 1,
-        backgroundColor: "#ddd",
     },
     separatorText: {
         marginHorizontal: 10,
-        color: "#666",
         fontSize: 14,
     },
     iconContainer: {
@@ -91,10 +65,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         textAlign: "center",
         borderWidth: 2,
-        // borderColor: "#ebebebff",
         borderRadius: 16,
-        // Shadow para iOS
-        // shadowColor: "#000000ff",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -115,35 +86,34 @@ const styles = StyleSheet.create({
 });
 
 export default function LoginScreen() {
-    const {signIn} = useAuth();
+    const { signIn } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLoginButtonPressed, setLoginButtonPressed] = useState<boolean>(false)
+    const [isLoginButtonPressed, setLoginButtonPressed] =
+        useState<boolean>(false);
+
     const router = useRouter();
 
-    const theme = useColorScheme() as 'light' | 'dark';
+    const theme = useColorScheme() as "light" | "dark";
 
     const handleLogin = async () => {
-        setLoginButtonPressed(true)
+        setLoginButtonPressed(true);
         // Validación básica
         if (!email || !password) {
             Alert.alert("Error", "Por favor completa todos los campos");
             return;
         }
 
-        // Aquí iría tu lógica de autenticación real
         console.log("Login attempt:", { email, password });
 
         // Simular login exitoso
         try {
             const user = await signIn(email, password);
-            console.log(user);
-            router.push("/(app)/map")
+            router.push("/(app)/map");
         } catch (error: any) {
             Alert.alert("Error", error.message);
         } finally {
-            setLoginButtonPressed(true)
+            setLoginButtonPressed(true);
         }
     };
 
@@ -166,47 +136,46 @@ export default function LoginScreen() {
 
     return (
         <ThemedView style={{ flex: 1 }}>
-            <ThemedLogoHeader title="Iniciar Sesión"></ThemedLogoHeader>
+            <ThemedLogoHeaderBar title="Iniciar Sesión"></ThemedLogoHeaderBar>
             <View style={styles.container}>
-                <View style={{ marginBottom: 30 }}>
+                <View style={{ marginTop: 10, marginBottom: 30 }}>
                     <ThemedText type="subtitle" style={{ fontWeight: "bold" }}>
                         Bienvenido de nuevo 👋!
                     </ThemedText>
-                    <ThemedText type="default" style={{ color: "#818181ff" }}>
+                    <ThemedText
+                        type="default"
+                        style={{ color: Colors[theme].text_500 }}
+                    >
                         Inicia sesión, te estamos esperando
                     </ThemedText>
                 </View>
 
                 {/* Formulario de login tradicional */}
-                <TextInput
-                    style={styles.input}
-                    placeholder="Correo electrónico"
-                    placeholderTextColor={"#999"}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
+                <EmailTextInput value={email} onChangeText={setEmail} />
+                <PasswordTextInput
+                    initialPassword={password}
+                    handlePasswordChange={setPassword}
                 />
 
-                <PasswordInput />
-                {/* <TextInput
-                    style={styles.input}
-                    placeholder="Contraseña"
-                    placeholderTextColor={"#999"}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                /> */}
-
-                <Pressable style={{...styles.button, backgroundColor: isLoginButtonPressed ? Colors[theme].bar_background_200 : Colors[theme].bar_background_100}} onPress={handleLogin}>
-                    <ThemedText style={styles.buttonText}>Ingresar</ThemedText>
-                </Pressable>
+                <PrimaryButton onPressCallback={handleLogin} active={isLoginButtonPressed}>
+                    <ThemedText type={"defaultSemiBold"}>Ingresar</ThemedText>
+                </PrimaryButton>
 
                 {/* Separador */}
                 <View style={styles.separatorContainer}>
-                    <View style={styles.separatorLine} />
-                    <ThemedText style={styles.separatorText}>o</ThemedText>
-                    <View style={styles.separatorLine} />
+                    <View
+                        style={{
+                            ...styles.separatorLine,
+                            backgroundColor: Colors[theme].text,
+                        }}
+                    />
+                    <ThemedText style={styles.separatorText}>ó</ThemedText>
+                    <View
+                        style={{
+                            ...styles.separatorLine,
+                            backgroundColor: Colors[theme].text,
+                        }}
+                    />
                 </View>
 
                 {/* Botones de redes sociales */}
@@ -215,10 +184,20 @@ export default function LoginScreen() {
                         style={styles.socialButton}
                         onPress={handleGoogleLogin}
                     >
-                        <View style={styles.iconContainer}>
+                        <View
+                            style={{
+                                ...styles.iconContainer,
+                                borderColor: Colors[theme].text_400,
+                            }}
+                        >
                             <ThemedText style={styles.googleIcon}>G</ThemedText>
                         </View>
-                        <ThemedText style={styles.socialButtonText}>
+                        <ThemedText
+                            style={{
+                                ...styles.socialButtonText,
+                                color: Colors[theme].background_200,
+                            }}
+                        >
                             Google
                         </ThemedText>
                     </Pressable>
@@ -227,12 +206,22 @@ export default function LoginScreen() {
                         style={styles.socialButton}
                         onPress={handleFacebookLogin}
                     >
-                        <View style={styles.iconContainer}>
+                        <View
+                            style={{
+                                ...styles.iconContainer,
+                                borderColor: Colors[theme].text_400,
+                            }}
+                        >
                             <ThemedText style={styles.facebookIcon}>
                                 f
                             </ThemedText>
                         </View>
-                        <ThemedText style={styles.socialButtonText}>
+                        <ThemedText
+                            style={{
+                                ...styles.socialButtonText,
+                                color: Colors[theme].background_200,
+                            }}
+                        >
                             Facebook
                         </ThemedText>
                     </Pressable>
@@ -247,14 +236,17 @@ export default function LoginScreen() {
                         gap: 5,
                     }}
                 >
-                    <ThemedText type="default" style={{ color: "#666" }}>
+                    <ThemedText
+                        type="default"
+                        style={{ color: Colors[theme].text_500 }}
+                    >
                         No tienes una cuenta?
                     </ThemedText>
                     <Link href="/(auth)/register" asChild>
                         <Pressable>
                             <ThemedText
                                 style={{
-                                    color: "#265373",
+                                    color: Colors[theme].bar_background_100,
                                     fontWeight: "600",
                                     textDecorationLine: "underline",
                                 }}

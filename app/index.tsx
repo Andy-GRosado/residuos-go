@@ -1,9 +1,10 @@
 // app/index.tsx - VERSIÓN FINAL
-import { ThemedText } from "@/app-example/components/themed-text";
-import { ThemedView } from "@/app-example/components/themed-view";
 import AppRouter from '@/components/app-router';
+import { ThemedTextBar } from "@/components/ui/bar/themed-text-bar";
+import { ThemedViewBar } from "@/components/ui/bar/themed-view-bar";
 import LogoImage from "@/components/ui/logo";
-import { useAuth } from '@/contexts/auth-context';
+import ThemedText from "@/components/ui/themed-text";
+import { useAuth } from '@/hooks/use-auth';
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
@@ -24,7 +25,7 @@ export default function Index() {
 
   if (!isAppReady) {
     return (
-      <ThemedView
+      <ThemedViewBar
         style={{
           flex: 1,
           justifyContent: "center",
@@ -33,9 +34,9 @@ export default function Index() {
         }}
       >
         <LogoImage size={200}/>
-        <ThemedText type="title">
+        <ThemedTextBar type="title">
           ResiduosGo
-        </ThemedText>
+        </ThemedTextBar>
         <ThemedText 
           style={{
             paddingTop: 24,
@@ -50,7 +51,7 @@ export default function Index() {
           color="white" 
           style={{ marginTop: 30 }} 
         />
-      </ThemedView>
+      </ThemedViewBar>
     );
   }
 

@@ -1,8 +1,7 @@
-// app/(auth)/register.tsx
-import { ThemedText } from "@/app-example/components/themed-text";
-import { ThemedView } from "@/app-example/components/themed-view";
-import ThemedLogoHeader from "@/components/ui/themed-logo-header";
-import { useAuth } from "@/contexts/auth-context";
+import ThemedLogoHeaderBar from "@/components/ui/bar/themed-logo-header-bar";
+import ThemedText from "@/components/ui/themed-text";
+import ThemedView from "@/components/ui/themed-view";
+import { useAuth } from "@/hooks//use-auth";
 import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -152,7 +151,11 @@ export default function RegisterScreen() {
 
         setLoading(true);
         try {
-            await signUp(formData.email, formData.password);
+            await signUp(
+                formData.email,
+                formData.password,
+                formData.confirmPassword
+            );
 
             Alert.alert(
                 "Éxito",
@@ -181,7 +184,9 @@ export default function RegisterScreen() {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                <ThemedLogoHeader title={"Crear cuenta"}></ThemedLogoHeader>
+                <ThemedLogoHeaderBar
+                    title={"Crear cuenta"}
+                ></ThemedLogoHeaderBar>
                 <ThemedView style={styles.container}>
                     {/* Header */}
                     <View style={{ marginBottom: 30 }}>

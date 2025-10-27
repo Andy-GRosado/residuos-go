@@ -3,19 +3,19 @@ import { StyleSheet, Text, useColorScheme, type TextProps } from 'react-native';
 import { Colors } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-export type ThemedTextProps = TextProps & {
+export type ThemedTextBarProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
 };
 
-export function ThemedText({
+export default function ThemedText({
   style,
   lightColor,
   darkColor,
   type = 'default',
   ...rest
-}: ThemedTextProps) {
+}: ThemedTextBarProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   const theme = useColorScheme() ?? 'light';
 

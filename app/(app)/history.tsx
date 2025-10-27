@@ -1,4 +1,4 @@
-import { ThemedText } from "@/app-example/components/themed-text";
+import ThemedText from "@/components/ui/themed-text";
 import { View } from "react-native";
 
 export default function MapScreen() {
