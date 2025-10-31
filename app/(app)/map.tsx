@@ -1,118 +1,89 @@
+import { ThemedTextBar } from "@/components/ui/bar/themed-text-bar";
+import { ThemedViewBar } from "@/components/ui/bar/themed-view-bar";
 import ThemedText from "@/components/ui/themed-text";
 import ThemedView from "@/components/ui/themed-view";
+import { ThemeConfigType } from "@/constants/theme";
+import { useLocation } from "@/hooks/use-location";
 import { useModal } from "@/hooks/use-modal";
-import { useToast } from "@/hooks/use-toast";
+import { useThemeColors } from "@/hooks/use-theme-color";
+import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    Pressable,
-    StyleSheet,
-    View,
-} from "react-native";
-import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 
-const { width, height } = Dimensions.get("window");
+const DEFAULT_MARKERS = [
+    {
+        id: 1,
+        latitude: -12.202423,
+        longitude: -76.93974,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+        title: "Basura reportada",
+        description: "Acumulación de residuos plásticos",
+    },
 
-// Región por defecto en caso de error (Ciudad de México)
+    {
+        id: 2,
+        latitude: -12.201423,
+        longitude: -76.93974,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+        title: "Basura reportada",
+        description: "Acumulación de residuos papel",
+    },
+];
+
 const DEFAULT_REGION: Region = {
-    latitude: 19.4326,
-    longitude: -99.1332,
+    latitude: -12.213625,
+    longitude: -76.93974,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 };
 
 export default function MapScreen() {
+    const themeColors = useThemeColors() as ThemeConfigType;
     const [region, setRegion] = useState<Region>(DEFAULT_REGION);
-    const [selectedMarker, setSelectedMarker] = useState<any>(null);
-    const [userLocation, setUserLocation] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [locationError, setLocationError] = useState<string | null>(null);
-    const [locationPermission, setLocationPermission] =
-        useState<boolean>(false);
-    const [cameraPermission, setCameraPermission] = useState<boolean>(false);
+    const [markers, setMarkers] = useState<any[]>([]);
+    const [selectedMarker, setSelectedMarker] = useState<any>([]);
+    const {
+        locationPermission,
+        location,
+        askLocationPermission,
+        updateLocation,
+    } = useLocation();
+
     const mapRef = useRef<MapView>(null);
     const router = useRouter();
     const { showModal } = useModal();
-    const { showToast } = useToast();
 
-    // Obtener ubicación actual del dispositivo
     useEffect(() => {
-        (async () => {
+        const fetch_markers = async () => {
             try {
-                setLoading(true);
-                let camera_permission =
-                    await Location.requestForegroundPermissionsAsync();
+                const { data, error: supabaseError } = await supabase
+                    .from("reports")
+                    .select("*");
 
-                if (camera_permission.status != "granted") {
-                    setLocationError("Permiso de ubicación denegado");
-                    setLoading(false);
-                    setLocationPermission(false);
-                    return;
+                if (supabaseError) {
+                    setMarkers([]);
+                    throw supabaseError;
                 }
 
-                let location = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.BestForNavigation,
-                    timeInterval: 1500,
-                });
-                let { latitude, longitude } = location.coords;
-                const userRegion: Region = {
-                    latitude,
-                    longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                };
-
-                setRegion(userRegion);
-                setUserLocation({
-                    latitude,
-                    longitude,
-                });
-            } catch (error) {
-                console.error("Error obteniendo ubicación:", error);
-                setLocationError("No se pudo obtener la ubicación actual");
-                showModal({
-                    message: 'No se pudo obtener permisos de ubicación',
-                    type: 'info',
-                    confirmText: 'Volver a intentar',
-                    cancelText: 'Cancelar'
-                })
+                setMarkers(data || []);
+            } catch (err) {
+                console.error("Error:", err);
+                setMarkers([]);
             } finally {
-                // showModal({
-                //     title: ""
-                //     message: 'Ubicacion obtenida',
-                //     type: "info",
-                //     confirmText: "ok, gracias"
-                // })
-                setLoading(false);
-
+                // Nada
             }
-        })();
-    }, []);
+        };
 
-    // Obtener permisos de camara
-    useEffect(() => {
-        (async () => {
-            const { status } =
-                await ImagePicker.requestCameraPermissionsAsync();
-            setCameraPermission(status === "granted");
-        })();
+        fetch_markers();
     }, []);
 
     const handleMarkerPress = (marker: any) => {
         setSelectedMarker(marker);
-        Alert.alert(marker.title, marker.description, [
-            { text: "Cerrar", style: "cancel" },
-            {
-                text: "Ver detalles",
-                onPress: () => console.log("Ver detalles:", marker.id),
-            },
-        ]);
     };
 
     const handleMapPress = () => {
@@ -120,9 +91,10 @@ export default function MapScreen() {
     };
 
     const centerMap = () => {
-        if (userLocation) {
+        if (location != undefined) {
             const userRegion: Region = {
-                ...userLocation,
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             };
@@ -154,52 +126,9 @@ export default function MapScreen() {
 
     const takePhotoHere = async () => {
         try {
-            // Verificar permisos de cámara
-            if (!cameraPermission) {
-                const { status } =
-                    await ImagePicker.requestCameraPermissionsAsync();
-                if (status !== "granted") {
-                    showModal({
-                        title: 'Permiso para uso de cámara',
-                        message: 'No se puede acceder a la cámara',
-                        type: 'info',
-                    })
-                    Alert.alert(
-                        "Permiso requerido",
-                        "Se necesita acceso a la cámara para tomar fotos.",
-                        [{ text: "OK" }]
-                    );
-                    return;
-                }
-                setCameraPermission(true);
-            }
-
-            // Obtener ubicación actual
-            let currentLocation = null;
-            try {
-                const location = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.Balanced,
-                });
-                currentLocation = {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                };
-            } catch (locationError) {
-                console.error(
-                    "Error obteniendo ubicación para foto:",
-                    locationError
-                );
-                // Continuar sin ubicación si hay error
-            }
-
             // Navegar a la pantalla de cámara con la ubicación
             router.push({
                 pathname: "/camera",
-                params: {
-                    location: currentLocation
-                        ? JSON.stringify(currentLocation)
-                        : null,
-                },
             });
         } catch (error) {
             console.error("Error preparando cámara:", error);
@@ -209,41 +138,20 @@ export default function MapScreen() {
         }
     };
 
-    if (loading) {
-        return (
-            <ThemedView style={styles.container}>
-                <View style={styles.header}>
-                    <ThemedText type="title" style={styles.title}>
-                        Mapa de residuos
-                    </ThemedText>
-                    <ThemedText type="default" style={styles.subtitle}>
-                        Reporta acumulación de residuos cerca de tí
-                    </ThemedText>
-                </View>
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#265373" />
-                    <ThemedText type="default" style={styles.loadingText}>
-                        Obteniendo tu ubicación...
-                    </ThemedText>
-                </View>
-            </ThemedView>
-        );
-    }
-
     return (
-        <ThemedView style={styles.container}>
+        <ThemedView style={{ flex: 1 }}>
             {/* Header */}
-            <View style={styles.header}>
-                <ThemedText type="subtitle" style={styles.title}>
-                    ResiduosGo
-                </ThemedText>
-            </View>
+            <ThemedViewBar
+                style={{ alignItems: "center", padding: 20, paddingTop: 60 }}
+            >
+                <ThemedTextBar type="subtitle">ResiduosGo</ThemedTextBar>
+            </ThemedViewBar>
 
             {/* Mapa */}
-            <View style={styles.mapContainer}>
+            <View style={{ flex: 1, position: "relative" }}>
                 <MapView
                     ref={mapRef}
-                    style={styles.map}
+                    style={{ width: "100%", height: "100%" }}
                     provider={PROVIDER_GOOGLE}
                     initialRegion={region}
                     region={region}
@@ -255,33 +163,130 @@ export default function MapScreen() {
                     showsScale={true}
                 >
                     {/* Marcadores pueden ir aquí */}
+                    {markers.map((marker) => (
+                        <Marker
+                            key={marker.id}
+                            coordinate={{
+                                latitude: marker.latitude,
+                                longitude: marker.longitude,
+                            }}
+                            title={marker.title}
+                            description={marker.description}
+                            onPress={() => {
+                                handleMarkerPress(marker);
+                            }}
+                            pinColor={themeColors.semantic.error[100]}
+                        ></Marker>
+                    ))}
                 </MapView>
 
+                {/* Boton de historial */}
+                <Pressable
+                    style={{
+                        ...styles.cameraButton,
+                        top: 20,
+                        left: 20,
+                        backgroundColor: themeColors.bar.background[200],
+                    }}
+                    onPress={() => { router.push("/(app)/history") }}
+                >
+                    <Ionicons
+                        name="document"
+                        size={24}
+                        color={themeColors.bar.text[100]}
+                    />
+                </Pressable>
+
                 {/* Controles del mapa */}
-                <View style={styles.controlsContainer}>
-                    <Pressable style={styles.controlButton} onPress={centerMap}>
-                        <Ionicons name="locate" size={20} color="#265373" />
+                <View
+                    style={{
+                        position: "absolute",
+                        top: 20,
+                        right: 20,
+                        gap: 10,
+                    }}
+                >
+                    <Pressable
+                        style={{
+                            ...styles.centerControl,
+                            backgroundColor: themeColors.bar.background[200],
+                        }}
+                        onPress={centerMap}
+                    >
+                        <Ionicons
+                            name="locate"
+                            size={20}
+                            color={themeColors.bar.text[100]}
+                        />
                     </Pressable>
 
-                    <View style={styles.zoomControls}>
-                        <Pressable style={styles.zoomButton} onPress={zoomIn}>
-                            <Ionicons name="add" size={20} color="#265373" />
+                    <View
+                        style={{
+                            ...styles.zoomControls,
+                            backgroundColor: themeColors.bar.background[200],
+                        }}
+                    >
+                        <Pressable
+                            style={{
+                                ...styles.zoomButton,
+                                borderBottomWidth: 1,
+                                borderColor: themeColors.text[400],
+                            }}
+                            onPress={zoomIn}
+                        >
+                            <Ionicons
+                                name="add"
+                                size={20}
+                                color={themeColors.bar.text[100]}
+                            />
                         </Pressable>
-                        <Pressable style={styles.zoomButton} onPress={zoomOut}>
-                            <Ionicons name="remove" size={20} color="#265373" />
+                        <Pressable
+                            style={{
+                                ...styles.zoomButton,
+                                borderBottomWidth: 0,
+                            }}
+                            onPress={zoomOut}
+                        >
+                            <Ionicons
+                                name="remove"
+                                size={20}
+                                color={themeColors.bar.text[100]}
+                            />
                         </Pressable>
                     </View>
                 </View>
 
                 {/* Botón para tomar foto */}
-                <Pressable style={styles.cameraButton} onPress={takePhotoHere}>
-                    <Ionicons name="camera" size={24} color="white" />
-                </Pressable>
-
-                {/* Botón alternativo para ubicación actual */}
-                {/* <Pressable style={styles.locationButton} onPress={centerMap}>
-          <Ionicons name="navigate" size={20} color="white" />
-        </Pressable> */}
+                {location === undefined ? (
+                    <Pressable
+                        style={{
+                            ...styles.cameraButton,
+                            backgroundColor: themeColors.background[200],
+                        }}
+                        onPress={() => {
+                            if (
+                                locationPermission &&
+                                locationPermission.status == "granted"
+                            ) {
+                                updateLocation();
+                            } else {
+                                askLocationPermission();
+                            }
+                        }}
+                    >
+                        <Ionicons name="lock-closed" size={24} color="white" />
+                    </Pressable>
+                ) : (
+                    <Pressable
+                        style={{
+                            ...styles.cameraButton,
+                            backgroundColor: themeColors.bar.background[200],
+                        }}
+                        onPress={takePhotoHere}
+                    >
+                        <Ionicons name="camera" size={24} color={themeColors.bar.text[100]} />
+                    </Pressable>
+                )}
             </View>
 
             {/* Información del marcador seleccionado */}
@@ -300,45 +305,7 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        padding: 20,
-        paddingTop: 60,
-        backgroundColor: "#265373",
-    },
-    title: {
-        color: "white",
-        textAlign: "center",
-        marginBottom: 5,
-    },
-    subtitle: {
-        color: "rgba(255, 255, 255, 0.8)",
-        textAlign: "center",
-    },
-    errorText: {
-        color: "#ff6b6b",
-        textAlign: "center",
-        marginTop: 10,
-        fontSize: 12,
-    },
-    mapContainer: {
-        flex: 1,
-        position: "relative",
-    },
-    map: {
-        width: "100%",
-        height: "100%",
-    },
-    controlsContainer: {
-        position: "absolute",
-        top: 20,
-        right: 20,
-        gap: 10,
-    },
-    controlButton: {
-        backgroundColor: "white",
+    centerControl: {
         width: 44,
         height: 44,
         borderRadius: 22,
@@ -372,35 +339,14 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderBottomWidth: 1,
-        borderBottomColor: "#f0f0f0",
     },
     cameraButton: {
         position: "absolute",
-        bottom: 40,
+        bottom: 120,
         right: 20,
-        backgroundColor: "#265373",
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    locationButton: {
-        position: "absolute",
-        bottom: 30,
-        right: 20,
-        backgroundColor: "#265373",
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: 64,
+        height: 64,
+        borderRadius: 64,
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
@@ -436,16 +382,5 @@ const styles = StyleSheet.create({
     },
     markerDescription: {
         color: "#666",
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f8f9fa",
-    },
-    loadingText: {
-        marginTop: 16,
-        color: "#265373",
-        textAlign: "center",
     },
 });

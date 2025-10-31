@@ -1,25 +1,20 @@
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useAssets } from 'expo-asset';
-import { Image, ImageProps } from 'expo-image';
+import { useAssets } from "expo-asset";
+import { Image, ImageProps } from "expo-image";
 
-
-export type LogoImageProps = ImageProps & {
-    size: number
-}
+export type LogoImageProps = ImageProps & { size: number };
 
 export default function LogoImage({ size, style }: LogoImageProps) {
-    const [assets, error] = useAssets([require('@/assets/logo/logo.svg')]);
-    const logo_color = useThemeColor({}, 'bar_text') 
-    
+    const [assets, error] = useAssets([require("@/assets/logo/logo.svg")]);
+
     if (!assets) {
-        return null
+        return null;
     }
 
     return (
-        <Image 
+        <Image
             source={assets[0]}
-            style={[{width: size, height: size}, style]}
-            contentFit='contain'
+            style={[{ width: size, height: size }, style]}
+            contentFit="contain"
         />
-    )
+    );
 }

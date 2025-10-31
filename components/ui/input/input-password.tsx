@@ -1,7 +1,13 @@
-import { Colors } from "@/constants/theme";
+import { ThemeConfigType } from "@/constants/theme";
+import { useThemeColors } from "@/hooks/use-theme-color";
 import { Ionicons } from "@expo/vector-icons"; // or your preferred icon library
 import React, { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, useColorScheme } from "react-native";
+import {
+    StyleSheet,
+    TextInput,
+    TextInputProps,
+    TouchableOpacity,
+} from "react-native";
 import ThemedView from "../themed-view";
 
 const styles = StyleSheet.create({
@@ -14,37 +20,45 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 15,
-        marginBottom: 15,
         fontSize: 16,
     },
     eyeIcon: {
         position: "absolute",
         right: 15,
         top: "50%",
-        transform: [{ translateY: -24 }],
-        padding: 5,
+        transform: [{ translateY: -20 }],
+        padding: 8
     },
 });
 
+export type PasswordTextInputProps = TextInputProps & {
+    initialPassword?: string;
+    handlePasswordChange: (password: string) => void;
+};
 
-export default function PasswordTextInput({initialPassword, handlePasswordChange}: {initialPassword: string, handlePasswordChange: (password: string) => void}) {
+export default function PasswordTextInput(props: PasswordTextInputProps) {
     const [showPassword, setShowPassword] = useState(false);
-    const theme = useColorScheme() ?? 'light';
+    const themeColors = useThemeColors() as ThemeConfigType;
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
     return (
-        <ThemedView
-            style={styles.inputContainer}
-        >
+        <ThemedView style={styles.inputContainer}>
             <TextInput
-                style={{...styles.input, borderColor: Colors[theme].text_200, color: Colors[theme].text}}
-                placeholder="Contraseña"
-                placeholderTextColor={Colors[theme].text_500}
-                value={initialPassword}
-                onChangeText={handlePasswordChange}
+                style={[
+                    props.style,
+                    {
+                        ...styles.input,
+                        borderColor: themeColors.text[200],
+                        color: themeColors.text.default,
+                    },
+                ]}
+                placeholder={props.placeholder ?? 'Contraseña'}
+                placeholderTextColor={themeColors.text[500]}
+                value={props.initialPassword}
+                onChangeText={props.handlePasswordChange}
                 secureTextEntry={!showPassword}
             />
             <TouchableOpacity
@@ -54,10 +68,9 @@ export default function PasswordTextInput({initialPassword, handlePasswordChange
                 <Ionicons
                     name={showPassword ? "eye-off" : "eye"}
                     size={24}
-                    color={Colors[theme].text_500}
+                    color={themeColors.text[500]}
                 />
             </TouchableOpacity>
         </ThemedView>
     );
-};
-
+}

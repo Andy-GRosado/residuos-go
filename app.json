@@ -45,6 +45,12 @@
           "locationAlwaysAndWhenInUsePermission": "Permitir $(PRODUCT_NAME) usar tu ubicación para mostrar puntos de reciclaje cercanos.",
           "locationWhenInUsePermission": "Permitir $(PRODUCT_NAME) usar tu ubicación para mostrar puntos de reciclaje cercanos."
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+        }
       ]
     ],
     "experiments": {

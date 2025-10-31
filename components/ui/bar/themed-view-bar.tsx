@@ -1,14 +1,28 @@
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps } from "react-native";
 
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { ThemeConfigType } from "@/constants/theme";
+import { useThemeColors } from "@/hooks/use-theme-color";
 
 export type ThemedViewBarProps = ViewProps & {
-  lightColor?: string;
-  darkColor?: string;
+    lightColor?: string;
+    darkColor?: string;
 };
 
-export function ThemedViewBar({ style, lightColor, darkColor, ...otherProps }: ThemedViewBarProps) {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'bar_background');
+export function ThemedViewBar({
+    style,
+    lightColor,
+    darkColor,
+    ...otherProps
+}: ThemedViewBarProps) {
+    const themeColors = useThemeColors() as ThemeConfigType;
 
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+    return (
+        <View
+            style={[
+                { backgroundColor: themeColors.bar.background.default },
+                style,
+            ]}
+            {...otherProps}
+        />
+    );
 }

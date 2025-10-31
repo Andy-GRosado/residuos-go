@@ -1,11 +1,11 @@
-import { Colors } from "@/constants/theme";
+import { ThemeConfigType } from "@/constants/theme";
+import { useThemeColors } from "@/hooks/use-theme-color";
 import {
     Modal,
     ModalProps,
     StyleSheet,
     Text,
     TouchableOpacity,
-    useColorScheme,
     View,
 } from "react-native";
 
@@ -29,7 +29,7 @@ export default function SuccessModal({
     title,
     message,
 }: SuccessModalProps) {
-    const theme = useColorScheme() ?? "light";
+    const themeColors = useThemeColors() as ThemeConfigType;
 
     return (
         <Modal
@@ -58,7 +58,7 @@ export default function SuccessModal({
                                 styles.button,
                                 {
                                     backgroundColor:
-                                        Colors[theme].messages.info.default,
+                                        themeColors.semantic.info.default,
                                 },
                             ]}
                             onPress={onConfirm}

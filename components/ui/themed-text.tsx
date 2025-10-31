@@ -1,7 +1,7 @@
 import { StyleSheet, Text, useColorScheme, type TextProps } from 'react-native';
 
-import { Colors } from '@/constants/theme';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { Colors, ThemeConfigType } from '@/constants/theme';
+import { useThemeColors } from '@/hooks/use-theme-color';
 
 export type ThemedTextBarProps = TextProps & {
   lightColor?: string;
@@ -16,13 +16,13 @@ export default function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextBarProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const themeColors = useThemeColors() as ThemeConfigType;
   const theme = useColorScheme() ?? 'light';
 
   return (
     <Text
       style={[
-        { color },
+        { color: themeColors.text.default },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,

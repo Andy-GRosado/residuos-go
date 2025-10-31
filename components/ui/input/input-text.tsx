@@ -9,25 +9,26 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         paddingHorizontal: 15,
-        marginBottom: 15,
         fontSize: 16,
     },
 });
 
-export default function EmailTextInput(props: TextInputProps) {
+export default function TextInput(props: TextInputProps) {
     const themeColors = useThemeColors() as ThemeConfigType;
     return (
         <BasicInput
-            style={{
-                ...styles.input,
-                borderColor: themeColors.text[200],
-                color: themeColors.text.default,
-            }}
-            placeholder={props.placeholder ?? "Correo electrónico"}
+            {...props}
+            style={[
+                styles.input,
+                {
+                    borderColor: themeColors.text[200],
+                    color: themeColors.text.default,
+                },
+                props.style, // permite sobreescribir estilos desde fuera
+            ]}
+            placeholder={props.placeholder ?? "Escribe algo ..."}
             placeholderTextColor={themeColors.text[500]}
             autoCapitalize="none"
-            keyboardType="email-address"
-            {...props}
         />
     );
 }

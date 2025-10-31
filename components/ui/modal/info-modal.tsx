@@ -1,11 +1,11 @@
-import { Colors } from "@/constants/theme";
+import { ThemeConfigType } from "@/constants/theme";
+import { useThemeColors } from "@/hooks/use-theme-color";
 import {
     Modal,
     ModalProps,
     StyleSheet,
     Text,
     TouchableOpacity,
-    useColorScheme,
     View,
 } from "react-native";
 
@@ -29,7 +29,7 @@ export default function InfoModal({
     title,
     message,
 }: InfoModalProps) {
-    const theme = useColorScheme() ?? "light";
+    const themeColors = useThemeColors() as ThemeConfigType;
 
     return (
         <Modal
@@ -44,27 +44,29 @@ export default function InfoModal({
                     <Text style={styles.message}>{message}</Text>
 
                     <View style={styles.buttonsContainer}>
-                        <TouchableOpacity
-                            style={[styles.button, styles.cancelButton]}
-                            onPress={onClose}
-                        >
-                            <Text style={styles.cancelButtonText}>
-                                {cancelText}
-                            </Text>
-                        </TouchableOpacity>
+                        {cancelText && (
+                            <TouchableOpacity
+                                style={[styles.button, styles.cancelButton]}
+                                onPress={onCancel}
+                            >
+                                <Text style={styles.cancelButtonText}>
+                                    {cancelText}
+                                </Text>
+                            </TouchableOpacity>
+                        )}
 
                         <TouchableOpacity
                             style={[
                                 styles.button,
                                 {
                                     backgroundColor:
-                                        Colors[theme].messages.info.default,
+                                        themeColors.semantic.info.default,
                                 },
                             ]}
                             onPress={onConfirm}
                         >
                             <Text style={styles.confirmButtonText}>
-                                {confirmText}
+                                {confirmText ?? "OK"}
                             </Text>
                         </TouchableOpacity>
                     </View>

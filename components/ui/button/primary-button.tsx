@@ -1,5 +1,5 @@
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import { ThemeConfigType } from "@/constants/theme";
+import { useThemeColors } from "@/hooks/use-theme-color";
 import { Pressable, PressableProps, StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
@@ -8,26 +8,23 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 10,
-        color: "#ddd"
+        padding: 20,
+        paddingBlock: 10,
     },
 });
 
 export type PrimaryButtonProps = PressableProps & {
     onPressCallback: (...args: any[]) => any,
-    active: boolean,
 }
 
-export default function PrimaryButton({children, onPressCallback, active}: PrimaryButtonProps) {
-    const theme = useColorScheme() ?? "light";
+export default function PrimaryButton({children, onPressCallback}: PrimaryButtonProps) {
+    const themeColors = useThemeColors() as ThemeConfigType;
 
     return (
         <Pressable
             style={{
                 ...styles.button,
-                backgroundColor: active
-                    ? Colors[theme].bar_background
-                    : Colors[theme].bar_background,
+                backgroundColor: themeColors.bar.background.default
             }}
             onPress={onPressCallback}
         >

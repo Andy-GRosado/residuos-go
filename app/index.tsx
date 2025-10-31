@@ -4,14 +4,15 @@ import { ThemedTextBar } from "@/components/ui/bar/themed-text-bar";
 import { ThemedViewBar } from "@/components/ui/bar/themed-view-bar";
 import LogoImage from "@/components/ui/logo";
 import ThemedText from "@/components/ui/themed-text";
+import { ThemeConfigType } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useThemeColors } from "@/hooks/use-theme-color";
 import { useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 export default function Index() {
   const { isAppReady, markAppAsReady } = useAuth();
-  const backgroundColor = useThemeColor({}, 'bar_background')
+  const themeColors = useThemeColors() as ThemeConfigType
 
   useEffect(() => {
     if (!isAppReady) {
@@ -30,7 +31,7 @@ export default function Index() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: backgroundColor,
+          backgroundColor: themeColors.bar.background.default,
         }}
       >
         <LogoImage size={200}/>
@@ -54,7 +55,6 @@ export default function Index() {
       </ThemedViewBar>
     );
   }
-
-  // Si la app está lista, dejar que el router decida
+  
   return <AppRouter />;
 }

@@ -1,22 +1,17 @@
-import ErrorModal from '@/components/ui/modal/error-modal';
-import InfoModal from '@/components/ui/modal/info-modal';
-import SuccessModal from '@/components/ui/modal/success-modal';
-import WarningModal from '@/components/ui/modal/warning-modal';
+// contexts/modal-context.ts
+import Modal from '@/components/ui/modal/modal';
 import { TMessageTypes } from '@/constants/message-types';
 import React, { createContext, useState } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
-
-type ModalType = TMessageTypes;
 
 interface ModalConfig {
-  type: ModalType;
-  title?: string;
+  type: TMessageTypes;
+  title: string;
   message: string;
   confirmText?: string;
   cancelText?: string;
+  showCancelButton?: boolean;
   onConfirm?: () => void;
   onCancel?: () => void;
-  customComponent?: React.ComponentType<any>;
 }
 
 interface ModalContextType {
@@ -37,7 +32,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const hideModal = () => {
     setIsVisible(false);
-    setTimeout(() => setModalConfig(null), 300); // Wait for animation
+    setTimeout(() => setModalConfig(null), 300);
   };
 
   const handleConfirm = () => {
@@ -57,114 +52,17 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {modalConfig && (
         <Modal
           visible={isVisible}
-          transparent
-          animationType="none"
-          onRequestClose={hideModal}
-        >
-          <View style={styles.overlay}>
-            <View style={styles.modalContainer}>
-              {modalConfig.type === 'success' && (
-                <SuccessModal
-                  title={modalConfig.title || 'Confirmación'}
-                  message={modalConfig.message}
-                  confirmText={modalConfig.confirmText || 'Confirmar'}
-                  cancelText={modalConfig.cancelText || 'Cancelar'}
-                  onConfirm={handleConfirm}
-                  onCancel={handleCancel}
-                  onClose={hideModal}
-                />
-              )}
-              
-              {modalConfig.type === 'error' && (
-                <ErrorModal
-                  title={modalConfig.title || 'Error'}
-                  message={modalConfig.message}
-                  confirmText={modalConfig.confirmText || 'Confirmar'}
-                  cancelText={modalConfig.cancelText || 'Cancelar'}
-                  onConfirm={handleConfirm}
-                  onCancel={handleCancel}
-                  onClose={hideModal}
-                />
-              )}
-
-              {modalConfig.type === 'warning' && (
-                <WarningModal
-                  title={modalConfig.title || 'Advertencia'}
-                  message={modalConfig.message}
-                  confirmText={modalConfig.confirmText || 'Confirmar'}
-                  cancelText={modalConfig.cancelText || 'Cancelar'}
-                  onConfirm={handleConfirm}
-                  onCancel={handleCancel}
-                  onClose={hideModal}
-                />
-              )}
-
-              {modalConfig.type === 'info' && (
-                <InfoModal
-                  title={modalConfig.title || 'Info'}
-                  message={modalConfig.message}
-                  confirmText={modalConfig.confirmText || 'Confirmar'}
-                  cancelText={modalConfig.cancelText || 'Cancelar'}
-                  onConfirm={handleConfirm}
-                  onCancel={handleCancel}
-                  onClose={hideModal}
-                />
-              )}
-              
-              {modalConfig.customComponent && (
-                <modalConfig.customComponent onClose={hideModal} />
-              )}
-            </View>
-          </View>
-        </Modal>
+          onClose={hideModal}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          type={modalConfig.type}
+          title={modalConfig.title}
+          message={modalConfig.message}
+          confirmText={modalConfig.confirmText}
+          cancelText={modalConfig.cancelText}
+          showCancelButton={modalConfig.showCancelButton ?? true}
+        />
       )}
     </ModalContext.Provider>
   );
 };
-
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    borderRadius: 12,
-    padding: 20,
-    margin: 20,
-    minWidth: 300,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  message: {
-    fontSize: 16,
-    marginBottom: 20,
-    color: '#666',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-  },
-  button: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  cancelButton: {
-    backgroundColor: '#f1f1f1',
-  },
-  confirmButton: {
-    backgroundColor: '#007AFF',
-  },
-  cancelButtonText: {
-    color: '#666',
-  },
-  confirmButtonText: {
-    color: 'white',
-  },
-});

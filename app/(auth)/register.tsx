@@ -1,17 +1,15 @@
 import ThemedLogoHeaderBar from "@/components/ui/bar/themed-logo-header-bar";
+import PasswordTextInput from "@/components/ui/input/input-password";
+import TextInput from "@/components/ui/input/input-text";
 import ThemedText from "@/components/ui/themed-text";
 import ThemedView from "@/components/ui/themed-view";
+import { ThemeConfigType } from "@/constants/theme";
 import { useAuth } from "@/hooks//use-auth";
-import { Link, useRouter } from "expo-router";
+import { useModal } from "@/hooks/use-modal";
+import { useThemeColors } from "@/hooks/use-theme-color";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-    Alert,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 const styles = StyleSheet.create({
     container: {
@@ -34,23 +32,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#666",
     },
-    input: {
-        height: 50,
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        fontSize: 16,
-        color: "#ddd",
-    },
     button: {
         backgroundColor: "#265373",
         height: 50,
         borderRadius: 8,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 10,
+        marginTop: 20,
         marginBottom: 20,
     },
     buttonDisabled: {
@@ -76,8 +64,6 @@ const styles = StyleSheet.create({
     errorText: {
         color: "#e74c3c",
         fontSize: 14,
-        marginBottom: 10,
-        textAlign: "center",
     },
     successText: {
         color: "#27ae60",
@@ -88,11 +74,12 @@ const styles = StyleSheet.create({
 });
 
 export default function RegisterScreen() {
+    const themeColors = useThemeColors() as ThemeConfigType;
     const { signUp } = useAuth();
     const router = useRouter();
+    const { showModal } = useModal();
 
     const [formData, setFormData] = useState({
-        name: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -107,7 +94,6 @@ export default function RegisterScreen() {
             [field]: value,
         }));
 
-        // Clear error when user starts typing
         if (errors[field]) {
             setErrors((prev) => ({
                 ...prev,
@@ -118,11 +104,6 @@ export default function RegisterScreen() {
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
-
-        if (!formData.name.trim()) {
-            newErrors.name = "El nombre es requerido";
-        }
-
         if (!formData.email.trim()) {
             newErrors.email = "El email es requerido";
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -131,9 +112,16 @@ export default function RegisterScreen() {
 
         if (!formData.password) {
             newErrors.password = "La contraseña es requerida";
-        } else if (formData.password.length < 6) {
+        } else if (formData.password.length < 8) {
             newErrors.password =
-                "La contraseña debe tener al menos 6 caracteres";
+                "La contraseña debe tener al menos 8 caracteres";
+        }
+
+        if (!formData.confirmPassword) {
+            newErrors.confirmPassword = "La contraseña es requerida";
+        } else if (formData.confirmPassword.length < 8) {
+            newErrors.confirmPassword =
+                "La contraseña debe tener al menos 8 caracteres";
         }
 
         if (!formData.confirmPassword) {
@@ -147,39 +135,35 @@ export default function RegisterScreen() {
     };
 
     const handleRegister = async () => {
-        if (!validateForm()) return;
-
-        setLoading(true);
         try {
-            await signUp(
-                formData.email,
-                formData.password,
-                formData.confirmPassword
-            );
+            setLoading(true);
+            if (!validateForm()) return;
+            await signUp(formData.email, formData.password);
+            showModal({
+                title: "Registro exitoso",
+                message: "Te registro fue todo un exito",
+                type: "info",
+            });
+            setFormData({
+                email: "",
+                password: "",
+                confirmPassword: "",
+            });
 
-            Alert.alert(
-                "Éxito",
-                "Cuenta creada. Revisa tu email para confirmar la cuenta.",
-                [
-                    {
-                        text: "OK",
-                        onPress: () => router.push("/(auth)/login"),
-                    },
-                ]
-            );
+            router.back();
         } catch (error: any) {
-            Alert.alert("Error", error.message || "Error al crear la cuenta");
+            showModal({
+                title: "Error al registrar",
+                message: error.message,
+                type: "info",
+            });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <ThemedView
-            style={{ flex: 1 }}
-            lightColor="#265373"
-            darkColor="#16354b"
-        >
+        <ThemedView style={{ flex: 1 }}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -189,7 +173,7 @@ export default function RegisterScreen() {
                 ></ThemedLogoHeaderBar>
                 <ThemedView style={styles.container}>
                     {/* Header */}
-                    <View style={{ marginBottom: 30 }}>
+                    <View style={{ marginBottom: 10 }}>
                         <ThemedText
                             type="subtitle"
                             style={{ fontWeight: "bold" }}
@@ -207,26 +191,7 @@ export default function RegisterScreen() {
                     {/* Form */}
                     <TextInput
                         style={[
-                            styles.input,
-                            errors.name && { borderColor: "#e74c3c" },
-                        ]}
-                        placeholder="Nombre completo"
-                        placeholderTextColor="#999"
-                        value={formData.name}
-                        onChangeText={(value) =>
-                            handleInputChange("name", value)
-                        }
-                        autoCapitalize="words"
-                    />
-                    {errors.name && (
-                        <ThemedText style={styles.errorText}>
-                            {errors.name}
-                        </ThemedText>
-                    )}
-
-                    <TextInput
-                        style={[
-                            styles.input,
+                            { marginTop: 12 },
                             errors.email && { borderColor: "#e74c3c" },
                         ]}
                         placeholder="Correo electrónico"
@@ -239,45 +204,45 @@ export default function RegisterScreen() {
                         keyboardType="email-address"
                     />
                     {errors.email && (
-                        <ThemedText style={styles.errorText}>
+                        <ThemedText style={[styles.errorText]}>
                             {errors.email}
                         </ThemedText>
                     )}
 
-                    <TextInput
-                        style={[
-                            styles.input,
-                            errors.password && { borderColor: "#e74c3c" },
-                        ]}
-                        placeholder="Contraseña"
-                        placeholderTextColor="#999"
-                        value={formData.password}
-                        onChangeText={(value) =>
-                            handleInputChange("password", value)
-                        }
-                        secureTextEntry
-                    />
+                    <View style={{ marginTop: 12 }}>
+                        <PasswordTextInput
+                            style={[
+                                errors.password && { borderColor: "#e74c3c" },
+                            ]}
+                            placeholder="Contraseña"
+                            value={formData.password}
+                            handlePasswordChange={(value) =>
+                                handleInputChange("password", value)
+                            }
+                            secureTextEntry
+                        />
+                    </View>
                     {errors.password && (
                         <ThemedText style={styles.errorText}>
                             {errors.password}
                         </ThemedText>
                     )}
 
-                    <TextInput
-                        style={[
-                            styles.input,
-                            errors.confirmPassword && {
-                                borderColor: "#e74c3c",
-                            },
-                        ]}
-                        placeholder="Confirmar contraseña"
-                        placeholderTextColor="#999"
-                        value={formData.confirmPassword}
-                        onChangeText={(value) =>
-                            handleInputChange("confirmPassword", value)
-                        }
-                        secureTextEntry
-                    />
+                    <View style={{ marginTop: 12 }}>
+                        <PasswordTextInput
+                            style={[
+                                errors.confirmPassword && {
+                                    borderColor: "#e74c3c",
+                                },
+                            ]}
+                            placeholder="Confirmar contraseña"
+                            value={formData.confirmPassword}
+                            handlePasswordChange={(value) =>
+                                handleInputChange("confirmPassword", value)
+                            }
+                            secureTextEntry
+                        />
+                    </View>
                     {errors.confirmPassword && (
                         <ThemedText style={styles.errorText}>
                             {errors.confirmPassword}
@@ -302,34 +267,24 @@ export default function RegisterScreen() {
                         <ThemedText type="default" style={{ color: "#666" }}>
                             ¿Ya tienes una cuenta?
                         </ThemedText>
-                        <Link href="/(auth)/login" asChild>
-                            <Pressable>
-                                <ThemedText
-                                    style={{
-                                        color: "#265373",
-                                        fontWeight: "600",
-                                        textDecorationLine: "underline",
-                                    }}
-                                >
-                                    Inicia sesión
-                                </ThemedText>
-                            </Pressable>
-                        </Link>
+                        <Pressable
+                            onPress={() => {
+                                router.back();
+                            }}
+                        >
+                            <ThemedText
+                                style={{
+                                    color: themeColors.bar.background["100"],
+                                    fontWeight: "600",
+                                    textDecorationLine: "underline",
+                                }}
+                            >
+                                Inicia sesión
+                            </ThemedText>
+                        </Pressable>
                     </View>
                 </ThemedView>
             </ScrollView>
         </ThemedView>
     );
-}
-
-{
-    /* 
-
-<KeyboardAvoidingView
-    style={{...styles.container, backgroundColor: "#265373"}}
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
->    
-</KeyboardAvoidingView> 
-
-*/
 }

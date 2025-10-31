@@ -1,12 +1,12 @@
-import { Colors } from "@/constants/theme";
+import { ThemeConfigType } from "@/constants/theme";
+import { useThemeColors } from "@/hooks/use-theme-color";
 import {
     Modal,
     ModalProps,
     StyleSheet,
     Text,
     TouchableOpacity,
-    useColorScheme,
-    View,
+    View
 } from "react-native";
 
 export type WarningModalProps = ModalProps & {
@@ -29,8 +29,7 @@ export default function WarningModal({
     title,
     message,
 }: WarningModalProps) {
-    const theme = useColorScheme() ?? "light";
-    
+    const themeColors = useThemeColors() as ThemeConfigType;
 
     return (
         <Modal
@@ -59,7 +58,7 @@ export default function WarningModal({
                                 styles.button,
                                 {
                                     backgroundColor:
-                                        Colors[theme].messages.warning.default,
+                                        themeColors.semantic.warning.default,
                                 },
                             ]}
                             onPress={onConfirm}
