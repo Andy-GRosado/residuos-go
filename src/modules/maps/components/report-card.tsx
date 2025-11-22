@@ -5,6 +5,7 @@ import { useThemeColors } from "@/src/shared/hooks/use-theme-color";
 import { ThemeConfigType } from "@/src/store/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { TouchableOpacity, View } from "react-native";
 
 
@@ -49,7 +50,7 @@ export function ReportCard(props: ReportCardProps) {
                 }
             ]}
             activeOpacity={0.7}
-            // onPress={() => { router.push(`/(app)/reports/${props.report.id}`) }}
+            onPress={() => { router.push(`/(app)/report/${props.report.id}`) }}
         >
             {/* Contenido de texto a la izquierda */}
             <View style={{ marginRight: 12, justifyContent: 'space-between', gap: 8, flexShrink: 1 }} >

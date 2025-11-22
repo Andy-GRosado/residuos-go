@@ -11,6 +11,7 @@ interface YoloModelContextType {
     model: TensorflowModel | undefined,
     handlePredictDetectionFromFrame: (frame: Frame) => Promise<IBoundingBox[]>;
     handlePredictDetectionFromPhotoFile: (photFile: PhotoFile) => Promise<IBoundingBox[]>
+    handlePredictDetectionFromArrayBuffer: (photFile: ArrayBuffer) => Promise<IBoundingBox[]>
 }
 
 const YoloModelContext = createContext<YoloModelContextType | null>(null);
@@ -78,7 +79,15 @@ export function YoloModelProvider({ children }: { children: React.ReactNode }) {
         return newDetections;
     }, [model])
 
-    const handlePredictDetectionsFromPhotoFile = useCallback(async (frame: PhotoFile) => {
+    const handlePredictDetectionsFromArrayBuffer = useCallback(async (arrayBuffer: ArrayBuffer) => {
+        console.log("Tipo", typeof arrayBuffer);
+        console.log("Tipo", (new Float32Array(arrayBuffer)).length);
+
+        return [];
+    }, [model])
+
+    const handlePredictDetectionsFromPhotoFile = useCallback(async (photo: PhotoFile) => {
+        // 1. Cargar la imagen
         return []
     }, [model])
 
@@ -88,7 +97,8 @@ export function YoloModelProvider({ children }: { children: React.ReactNode }) {
                 plugin: plugin,
                 model: model,
                 handlePredictDetectionFromFrame: handlePredictDetectionsFromFrame,
-                handlePredictDetectionFromPhotoFile: handlePredictDetectionsFromPhotoFile
+                handlePredictDetectionFromPhotoFile: handlePredictDetectionsFromPhotoFile,
+                handlePredictDetectionFromArrayBuffer: handlePredictDetectionsFromArrayBuffer
             }}
         >
             {children}

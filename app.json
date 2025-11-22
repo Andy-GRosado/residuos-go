@@ -3,24 +3,18 @@
     "name": "residuos-go-v3",
     "slug": "residuos-go-v3",
     "version": "1.0.0",
+    "platforms": ["android"],
     "orientation": "portrait",
-    "icon": "./src/shared/assets/images/icon.png",
+    "icon": "./src/shared/assets/images/logo-icon.png",
     "scheme": "residuosgov3",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
-        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone."
-      }
-    },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./src/shared/assets/images/android-icon-foreground.png",
-        "backgroundImage": "./src/shared/assets/images/android-icon-background.png",
-        "monochromeImage": "./src/shared/assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#FAFAFA",
+        "foregroundImage": "./src/shared/assets/images/logo-icon.png",
+        "backgroundImage": "./src/shared/assets/images/logo-icon.png",
+        "monochromeImage": "./src/shared/assets/images/logo-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -36,10 +30,6 @@
         }
       },
       "package": "com.tony853.residuosgov3"
-    },
-    "web": {
-      "output": "static",
-      "favicon": "./src/shared/assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",

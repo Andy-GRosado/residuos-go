@@ -38,7 +38,7 @@ export function ReportsMapView(props: ReportsMapViewProps) {
     const callbackFetchReports = useCallback(async () => {
         setLoadedReports(true);
         try {
-            const data = await ReportService.getAllReports();
+            const data = await ReportService.getReportsInArea();
             setReports(data);
         } catch (error: any) {
             showModal({ title: 'Error al obtener reportes', message: 'Hubo un error al obtener los reportes', type: 'info' });
@@ -105,8 +105,8 @@ export function ReportsMapView(props: ReportsMapViewProps) {
                 showsCompass={true}
                 showsScale={true}
                 loadingEnabled={true}
-                loadingBackgroundColor={themeColors.background.default} // o "#f5f5f5"
-                loadingIndicatorColor={themeColors.tint} // o cualquier color
+                loadingBackgroundColor={themeColors.background.default}
+                loadingIndicatorColor={themeColors.tint}
                 
             >
                 {/* Tus marcadores */}

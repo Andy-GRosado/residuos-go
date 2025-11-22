@@ -1,3 +1,4 @@
+import LogoImage from '@/src/shared/components/logo';
 import ThemedText from '@/src/shared/components/themed-text';
 import { ThemedTextBar } from '@/src/shared/components/themed-text-bar';
 import { ThemedViewBar } from '@/src/shared/components/themed-view-bar';
@@ -32,8 +33,7 @@ export default function Index() {
           backgroundColor: themeColors.bar.background.default,
         }}
       >
-        {/* <LogoImage size={200}/> */}
-        <ThemedText>IMAGEN - LOGO</ThemedText>
+        <LogoImage size={200}/>
         <ThemedTextBar type="title">
           ResiduosGo
         </ThemedTextBar>

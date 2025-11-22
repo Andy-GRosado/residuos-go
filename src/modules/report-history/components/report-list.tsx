@@ -25,7 +25,7 @@ export function ReportList(props: ReportListProps) {
 
     // Navegación memoizada
     const handleReportPress = useCallback((reportId: string) => {
-        router.push(`/(app)/reports/${reportId}`);
+        router.push(`/(app)/report/${reportId}`);
     }, [router]);
 
     // Render item memoizado para mejor performance de FlatList

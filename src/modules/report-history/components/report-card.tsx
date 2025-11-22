@@ -63,7 +63,7 @@ export function ReportCard(props: ReportCardProps) {
                                 height: "100%",
                                 borderRadius: 8,
                             }}
-                            resizeMode="cover"
+                            contentFit="cover"
                             transition={200}
                         />
                     ) : (

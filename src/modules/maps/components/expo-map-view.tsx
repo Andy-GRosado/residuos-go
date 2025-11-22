@@ -40,7 +40,7 @@ export function ExpoReportMapsView(props: ReportsMapViewProps) {
 
     const handleFetchReports = useCallback(async () => {
         try {
-            const data = await ReportService.getAllReports();
+            const data = await ReportService.getReportsInArea();
             setReports(data);
         } catch (error: any) {
             showModal({ title: 'Error al obtener reportes', message: 'Hubo un error al obtener los reportes', type: 'info' });

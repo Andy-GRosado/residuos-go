@@ -101,7 +101,7 @@ export class ReportService {
 
     static async getReportsInArea() {
         const reports = await this.getAllReports();
-        const reports_filtered = reports.filter((report) => turf.booleanPointInPolygon([1, 2], VillaElSalvadorPolygon));
+        const reports_filtered = reports.filter((report) => turf.booleanPointInPolygon([Number(report.latitude), Number(report.longitude)], VillaElSalvadorPolygon));
         return reports_filtered;
     }
 }
