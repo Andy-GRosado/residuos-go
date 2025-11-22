@@ -6,32 +6,32 @@ import { useAuth } from "@/src/shared/hooks/use-auth";
 import { useModal } from "@/src/shared/hooks/use-modal";
 import { useThemeColors } from "@/src/shared/hooks/use-theme-color";
 import { ThemeConfigType } from "@/src/store/theme";
+import * as Location from 'expo-location';
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import { FormProvider } from 'react-hook-form'; // ← Agrega este import
 import { ScrollView } from "react-native";
-import { useLocation } from "../maps/hooks/use-location";
 import ReportForm from "./components/form-report";
 import PhotoReport from "./components/photo-report";
 import { useReportForm } from "./hooks/use-report-form";
 import { reportService } from "./services/report.serice";
 
-
 export type NewReportContainerProps = {
   photoUri: string,
-  bounding_box: IBoundingBox[]
+  boundingBox: IBoundingBox[]
+  location: Location.LocationObjectCoords
 }
 
 export default function NewReportContainer(props: NewReportContainerProps) {
-  const router = useRouter();
-  const { showModal } = useModal();
   const themeColors = useThemeColors() as ThemeConfigType;
-  // const { photo, setPhoto } = useCamera();
+  const router = useRouter();
+  
+  const { showModal } = useModal();
   const { profile } = useAuth();
-  const { location } = useLocation();
+  
 
   // Hook del formulario
-  const formMethods = useReportForm(props.photoUri, props.bounding_box);
+  const formMethods = useReportForm(props.photoUri, props.boundingBox);
   const { handleSubmit, formState: { isSubmitting } } = formMethods;
 
   // Manejo del envío del formulario
@@ -46,8 +46,8 @@ export default function NewReportContainer(props: NewReportContainerProps) {
         ...formData,
         created_by: profile.id,
         state: "pending" as const,
-        latitude: location?.coords.latitude || null,
-        longitude: location?.coords.longitude || null,
+        latitude: props.location.latitude,
+        longitude: props.location.longitude,
       };
 
       console.log("Enviando reporte:", reportData);

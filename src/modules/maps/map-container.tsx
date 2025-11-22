@@ -56,6 +56,7 @@ export function MapContainer() {
             </ThemedViewBar>
 
             {/* Mapa */}
+            {/* <ExpoReportMapsView ></ExpoReportMapsView> */}
             <ReportsMapView handleSelectReport={handleSelectReport} handleMapPress={handleUnselectReport}></ReportsMapView>
 
 

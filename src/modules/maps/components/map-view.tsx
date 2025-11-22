@@ -8,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, View, ViewProps } from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { useLocation } from "../hooks/use-location";
 
 export type ReportsMapViewProps = {
@@ -95,7 +95,7 @@ export function ReportsMapView(props: ReportsMapViewProps) {
             <MapView
                 ref={mapRef}
                 style={{ width: "100%", height: "100%" }}
-                // provider={PROVIDER_GOOGLE}
+                provider={PROVIDER_GOOGLE}
                 initialRegion={region}
                 region={region}
                 onRegionChangeComplete={setRegion}
@@ -104,7 +104,7 @@ export function ReportsMapView(props: ReportsMapViewProps) {
                 showsMyLocationButton={false}
                 showsCompass={true}
                 showsScale={true}
-                loadingEnabled={false}
+                loadingEnabled={true}
                 loadingBackgroundColor={themeColors.background.default} // o "#f5f5f5"
                 loadingIndicatorColor={themeColors.tint} // o cualquier color
                 

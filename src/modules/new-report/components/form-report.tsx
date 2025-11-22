@@ -1,10 +1,9 @@
-// components/reports/form-report.tsx
-import PrimaryButton from '@/components/ui/button/primary-button';
-import { ControlledInput } from '@/components/ui/input/controlled-input';
-import TextInput from '@/components/ui/input/input-text';
-import TextAreaInput from '@/components/ui/input/input-text-area';
-import ThemedText from '@/components/ui/themed-text';
-import { ThemeConfigType } from '@/constants/theme';
+import { ControlledInput } from '@/src/shared/components/input/controlled-input';
+import TextInput from '@/src/shared/components/input/input-text';
+import TextAreaInput from '@/src/shared/components/input/input-text-area';
+import PrimaryButton from '@/src/shared/components/primary-button';
+import ThemedText from '@/src/shared/components/themed-text';
+import { ThemeConfigType } from '@/src/store/theme';
 import { ActivityIndicator, View, ViewProps } from 'react-native';
 import { ReportFormData } from '../types/report.types';
 import { ReportIssues } from './report-issues';

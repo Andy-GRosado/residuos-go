@@ -2,18 +2,17 @@ import { IBoundingBox } from "@/src/models/bbox.model";
 import ThemedText from "@/src/shared/components/themed-text";
 import ThemedView from "@/src/shared/components/themed-view";
 import { Ionicons } from "@expo/vector-icons";
-import { bbox } from "@turf/turf";
 import { Image } from "expo-image";
+import * as Location from "expo-location";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { Dimensions, TouchableOpacity, View } from "react-native";
-
-import { PhotoFile, useLocationPermission } from "react-native-vision-camera";
-
+import { useLocationPermission } from "react-native-vision-camera";
 
 export type PhotoPreviewProps = {
-    photo: PhotoFile;
+    photoUri: string;
     boundingBox: IBoundingBox[];
+    location: Location.LocationObjectCoords,
     onRetake?: () => any;
     onSubmit?: () => any;
 }
@@ -24,18 +23,25 @@ export function PhotoPreview(props: PhotoPreviewProps) {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { hasPermission, requestPermission } = useLocationPermission()
 
-    const handlePhotoSubmit = useCallback(async() => {
-        try  {
+    const handlePhotoSubmit = useCallback(async () => {
+        try {
             if (!hasPermission) {
                 await requestPermission()
             }
-            
+
+            console.log({
+                photoUri: props.photoUri,
+                bbox: JSON.stringify(props.boundingBox),
+                lat: props.location.latitude,
+                lon: props.location.longitude,
+            },)
+
             router.push({
                 pathname: "/(app)/report/create",
                 params: {
-                    photoUri: props.photo.path, // photo ya es el URI string
-                    bbox: JSON.stringify(props.boundingBox)
-                    // location: params.location || null,
+                    photoUri: props.photoUri, // photo ya es el URI string
+                    bbox: JSON.stringify(props.boundingBox),
+                    location: JSON.stringify(props.location)
                 },
             });
 
@@ -44,7 +50,7 @@ export function PhotoPreview(props: PhotoPreviewProps) {
         }
     }, [])
 
-    console.log(props.photo.path)
+    console.log(props.photoUri)
     return (
         <ThemedView style={[
             { flex: 1, backgroundColor: "black", paddingHorizontal: 20, }
@@ -53,7 +59,7 @@ export function PhotoPreview(props: PhotoPreviewProps) {
 
             </View>
             <Image
-                source={{ uri: `file://${props.photo.path}` }}
+                source={{ uri: props.photoUri }}
                 style={[
                     {
                         flex: 1,
@@ -113,7 +119,16 @@ export function PhotoPreview(props: PhotoPreviewProps) {
                             backgroundColor: "#265373",
                         }
                     ]}
-                    onPress={() => { props.onSubmit  props.onSubmit() }}
+                    onPress={
+                        () => {
+                            if (props.onSubmit) {
+                                props.onSubmit();
+                            } else {
+                                handlePhotoSubmit();
+                            }
+
+                        }
+                    }
                     disabled={isLoading}
                 >
                     <Ionicons name="checkmark" size={20} color="white" />

@@ -12,16 +12,16 @@ const CONF_CLASSES: Record<ModelClass, { color: string, icon: string }> = {
 export function BoundingBoxOverlay({ detections }: { detections: IBoundingBox[] }) {
   console.log(detections);
   return (
-    <View style={[StyleSheet.absoluteFill, { borderWidth: 2, borderColor: 'white' }]} pointerEvents="none">
+    <View style={[StyleSheet.absoluteFill]} pointerEvents="none">
       {detections.map((detection, index) => (
         <View
           key={index}
           style={{
             position: 'absolute',
-            left: `${detection.x * 100 + 1}%`,
-            top: `${detection.y * 100 + 16}%`,
-            width: `${detection.width * 100 - 1}%`,
-            height: `${detection.height * 100 - 16}%`,
+            top: `${detection.y * 100 + 2}%`,
+            left: `${detection.x * 100}%`,
+            width: `${detection.width * 100}%`,
+            height: `${detection.height * 100}%`,
             borderWidth: 2,
             borderColor: CONF_CLASSES[detection.label] ? CONF_CLASSES[detection.label].color : '#00FF00',
             backgroundColor: 'transparent',
@@ -30,7 +30,8 @@ export function BoundingBoxOverlay({ detections }: { detections: IBoundingBox[] 
           <View
             style={{
               position: 'absolute',
-              top: -20,
+              left: 4,
+              top: -12,
               backgroundColor: CONF_CLASSES[detection.label] ? CONF_CLASSES[detection.label].color : 'rgba(0, 255, 0, 0.7)',
               paddingHorizontal: 4,
               paddingVertical: 2,

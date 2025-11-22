@@ -1,5 +1,6 @@
 // services/report-service.ts
-import { supabase } from '@/utils/supabase';
+
+import { supabase } from "@/src/shared/utils/supabase";
 
 export interface ReportCreateData {
   title: string;

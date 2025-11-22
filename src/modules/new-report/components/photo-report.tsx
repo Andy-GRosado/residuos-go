@@ -1,7 +1,7 @@
-import { ThemeConfigType } from "@/constants/theme";
+
+import { ThemeConfigType } from "@/src/store/theme";
 import { Image } from "expo-image";
 import { View, ViewProps } from "react-native";
-
 
 
 export type PhotoReportProps = {

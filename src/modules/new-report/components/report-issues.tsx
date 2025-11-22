@@ -1,6 +1,6 @@
 // components/reports/report-issues.tsx
-import ThemedCheckbox from '@/components/ui/checkbox/checkbox';
-import ThemedText from '@/components/ui/themed-text';
+import ThemedCheckbox from '@/src/shared/components/checkbox';
+import ThemedText from '@/src/shared/components/themed-text';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 import { ReportFormData, ReportIssue } from '../types/report.types';

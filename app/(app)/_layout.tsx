@@ -88,7 +88,14 @@ export default function AppLayout() {
       />
 
       <Stack.Screen
-        name="reports/[id]"
+        name="report/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="report/create"
         options={{
           headerShown: false,
         }}
