@@ -1,23 +1,20 @@
 import ThemedLogoHeaderBar from "@/src/shared/components/themed-logo-header-bar";
 import ThemedText from "@/src/shared/components/themed-text";
 import ThemedView from "@/src/shared/components/themed-view";
+import { useAuth } from "@/src/shared/hooks/use-auth";
 import { useThemeColors } from "@/src/shared/hooks/use-theme-color";
 import { ThemeConfigType } from "@/src/store/theme";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { LoginForm } from "./components/login-form";
 
 export function LoginContainer() {
     const themeColors = useThemeColors() as ThemeConfigType;
+    const { profile } = useAuth()
 
     const handleGoogleLogin = () => {
         console.log("Google login");
         // Alert.alert("Google Login", "Iniciando sesión con Google...");
-    };
-
-    const handleFacebookLogin = () => {
-        console.log("Facebook login");
-        // login();
     };
 
     return (
@@ -36,10 +33,7 @@ export function LoginContainer() {
                 </View>
 
                 {/* Formulario de login tradicional */}
-                <LoginForm
-                    handleAfterLogin={() => { router.push("/(app)/map") }}
-                >
-                </LoginForm>
+                <LoginForm />
 
                 {/* Separador */}
                 <View style={styles.separatorContainer}>
@@ -79,30 +73,6 @@ export function LoginContainer() {
                             }}
                         >
                             Google
-                        </ThemedText>
-                    </Pressable>
-
-                    <Pressable
-                        style={styles.socialButton}
-                        onPress={handleFacebookLogin}
-                    >
-                        <View
-                            style={{
-                                ...styles.iconContainer,
-                                borderColor: themeColors.text[400],
-                            }}
-                        >
-                            <ThemedText style={styles.facebookIcon}>
-                                f
-                            </ThemedText>
-                        </View>
-                        <ThemedText
-                            style={{
-                                ...styles.socialButtonText,
-                                color: themeColors.background[200],
-                            }}
-                        >
-                            Facebook
                         </ThemedText>
                     </Pressable>
                 </View>

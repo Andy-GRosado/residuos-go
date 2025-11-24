@@ -1,12 +1,12 @@
 // hooks/forms/use-report-form.ts
-import { IBoundingBox } from '@/src/models/bbox.model';
+import { TensorBoundingBox } from '@/src/models/bbox.model';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as Location from 'expo-location';
 import { useForm } from 'react-hook-form';
-import { ReportFormData } from '../types/report.types';
 import { reportSchema } from '../types/schemas/report.schema';
 
-export const useReportForm = (photoUri: string, bbox: IBoundingBox[]) => {
-  const methods = useForm<ReportFormData>({
+export const useReportForm = (photoUri: string, bbox: TensorBoundingBox[], location: Location.LocationObjectCoords) => {
+  const methods = useForm({
     resolver: yupResolver(reportSchema),
     defaultValues: {
       title: '',
@@ -15,10 +15,10 @@ export const useReportForm = (photoUri: string, bbox: IBoundingBox[]) => {
       state: 'pending',
       image_url: photoUri,
       bounding_boxes: bbox,
-      latitude: 0,
-      longitude: 0
+      latitude: location.latitude,
+      longitude: location.longitude
     },
-    mode: 'onChange'
+    mode: 'onTouched'
   });
 
   return methods;

@@ -64,7 +64,8 @@ export function ReportComments(props: ReportCommentsProps) {
                 .single();
 
             if (error) throw error;
-
+            
+            setComments(prev => [data, ...prev]);
             setNewComment('');
         } catch (error: any) {
             showModal({

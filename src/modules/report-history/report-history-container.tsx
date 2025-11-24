@@ -1,4 +1,3 @@
-import { IProfile } from "@/src/models/profile.model";
 import { IReport } from "@/src/models/report.model";
 import { IFromSupabase } from "@/src/models/supabase.model";
 import ThemedText from "@/src/shared/components/themed-text";
@@ -19,7 +18,7 @@ import { ReportList } from "./components/report-list";
 
 
 export default function ReportHistoryContainer() {
-    const { profile, getProfile } = useAuth();
+    const { profile, getUserProfile } = useAuth();
     const [reports, setReports] = useState<(IReport & IFromSupabase)[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -31,7 +30,6 @@ export default function ReportHistoryContainer() {
         try {
             setLoading(true);
             setError(null);
-            const profile: IProfile = await getProfile();
 
             const { data, error } = await supabase
                 .from("reports")

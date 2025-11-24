@@ -1,12 +1,10 @@
-import { IBoundingBox } from '@/src/models/bbox.model';
+import { TensorBoundingBox } from '@/src/models/bbox.model';
 import { ThemedTextBar } from '@/src/shared/components/themed-text-bar';
 import ThemedView from '@/src/shared/components/themed-view';
 import { ThemedViewBar } from '@/src/shared/components/themed-view-bar';
 import { useModal } from '@/src/shared/hooks/use-modal';
 import { useThemeColors } from '@/src/shared/hooks/use-theme-color';
-import { VillaElSalvadorPolygon } from '@/src/store/polygons';
 import { ThemeConfigType } from '@/src/store/theme';
-import * as turf from '@turf/turf';
 import * as Location from "expo-location";
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
@@ -26,15 +24,15 @@ export function CameraContainer() {
     const { showModal } = useModal()
 
     const [photo, setPhoto] = useState<string | null>(null);
-    const [detections, setDetections] = useState<IBoundingBox[]>([]);
+    const [detections, setDetections] = useState<TensorBoundingBox[]>([]);
     const [lastLocation, setLastLocation] = useState<Location.LocationObjectCoords | null>(null);
 
-    const handleTakePhoto = useCallback(async (photoUri: string, boundingBox: IBoundingBox[]) => {
+    const handleTakePhoto = useCallback(async (photoUri: string, boundingBox: TensorBoundingBox[]) => {
         const location = await Location.getCurrentPositionAsync();
-        if (!turf.booleanPointInPolygon([location.coords.latitude, location.coords.longitude], VillaElSalvadorPolygon)) {
-            showModal({ title: 'Ubicación fuera de rango', message: 'No puedes crear reportes fuera de Villa el Salvador', type: 'error' });
-            return;
-        }
+        // if (!turf.booleanPointInPolygon([location.coords.latitude, location.coords.longitude], VillaElSalvadorPolygon)) {
+        //     showModal({ title: 'Ubicación fuera de rango', message: 'No puedes crear reportes fuera de Villa el Salvador', type: 'error' });
+        //     return;
+        // }
 
         setLastLocation(location.coords);
         setPhoto(photoUri);

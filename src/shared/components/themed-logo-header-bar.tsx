@@ -10,8 +10,8 @@ export default function ThemedLogoHeaderBar({title}: {title: string}) {
     return (
         <ThemedView
             style={{
-                paddingTop: 100,
-                paddingBottom: 80,
+                paddingTop: 60,
+                paddingBottom: 40,
                 backgroundColor: themeColors.bar.background.default,
             }}
         >

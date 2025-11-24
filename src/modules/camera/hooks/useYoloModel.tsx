@@ -1,4 +1,4 @@
-import { IBoundingBox } from "@/src/models/bbox.model";
+import { TensorBoundingBox } from "@/src/models/bbox.model";
 import { useCallback, useContext } from "react";
 
 import { createContext } from "react";
@@ -9,9 +9,9 @@ import { useResizePlugin } from 'vision-camera-resize-plugin';
 interface YoloModelContextType {
     plugin: TensorflowPlugin,
     model: TensorflowModel | undefined,
-    handlePredictDetectionFromFrame: (frame: Frame) => Promise<IBoundingBox[]>;
-    handlePredictDetectionFromPhotoFile: (photFile: PhotoFile) => Promise<IBoundingBox[]>
-    handlePredictDetectionFromArrayBuffer: (photFile: ArrayBuffer) => Promise<IBoundingBox[]>
+    handlePredictDetectionFromFrame: (frame: Frame) => Promise<TensorBoundingBox[]>;
+    handlePredictDetectionFromPhotoFile: (photFile: PhotoFile) => Promise<TensorBoundingBox[]>
+    handlePredictDetectionFromArrayBuffer: (photFile: ArrayBuffer) => Promise<TensorBoundingBox[]>
 }
 
 const YoloModelContext = createContext<YoloModelContextType | null>(null);
@@ -52,7 +52,7 @@ export function YoloModelProvider({ children }: { children: React.ReactNode }) {
         const yoloOutput: Float32Array = outputs[0] as Float32Array
 
         // PROCESAR DETECCIONES
-        const newDetections: IBoundingBox[] = [];
+        const newDetections: TensorBoundingBox[] = [];
         const scoreThreshold = 0.15;
 
         for (let i = 0; i < 300; i++) {
@@ -66,10 +66,10 @@ export function YoloModelProvider({ children }: { children: React.ReactNode }) {
 
             if (confidence > scoreThreshold) {
                 newDetections.push({
-                    x: Math.max(0, Math.min(1, x1)),
-                    y: Math.max(0, Math.min(1, y1)),
-                    width: Math.max(0, Math.min(1, x2 - x1)),
-                    height: Math.max(0, Math.min(1, y2 - y1)),
+                    x1: Math.max(0, Math.min(1, x1)),
+                    y1: Math.max(0, Math.min(1, y1)),
+                    x2: Math.max(0, Math.min(1, x2 - x1)),
+                    y2: Math.max(0, Math.min(1, y2 - y1)),
                     score: confidence,
                     label: CLASS_NAMES[class_id] || `Class ${class_id}`
                 });

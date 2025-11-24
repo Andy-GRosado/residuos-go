@@ -1,6 +1,6 @@
 
 
-export interface IFromSupabase {
+export interface IFromSupabase extends ICreatedByModel {
     id: string,
     created_at: Date,
 }

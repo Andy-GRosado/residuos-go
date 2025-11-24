@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { IProfile } from "@/src/models/profile.model";
 import { supabase } from "@/src/shared/utils/supabase";
 import { User } from "@supabase/supabase-js";
+import { router } from "expo-router";
 import React, { createContext, useEffect, useState } from "react";
 
 interface AuthContextType {
@@ -23,7 +24,8 @@ interface AuthContextType {
         phone_number?: number,
         photo_url?: string
     ) => Promise<void>;
-    getProfile: () => Promise<any>;
+    getUserProfile: () => Promise<any>;
+    getProfileById: (id: string) => Promise<any>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,15 +90,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email,
             password,
         });
-
+        
         if (error) throw error;
+        
+        setUser(data.user);
         setIsAuthenticated(true);
+
+        const profile = await getProfileById(data.user.id);
+        if (!profile) {
+            setProfile(null);
+            router.push('/(app)/new-profile')
+            return data;
+        }
+        
+        setProfile(profile);
+        router.push('/(app)/map')
         return data;
     };
 
     const signOut = async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
+        setUser(null);
         setIsAuthenticated(false);
     };
 
@@ -133,10 +148,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(current_profile);
     };
 
-    const getProfile = async () => {
+    const getProfileById = async (id: string) => {
         const { data: profiles, error: profiles_error } = await supabase
             .from("profiles")
-            .select("*").eq('created_by', user?.id);
+            .select("*").eq('created_by', id);
         if (profiles_error) {
             throw profiles_error;
         }
@@ -148,6 +163,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setProfile(null);
             return undefined;
         }
+    };
+
+    const getUserProfile = async () => {
+        if (!user) {
+            return undefined;
+        }
+        
+        const profile = await getProfileById(user.id);
+        setProfile(profile);
     };
 
     const markAppAsReady = () => {
@@ -164,7 +188,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 signOut,
                 signUp,
                 createProfile,
-                getProfile,
+                getUserProfile,
+                getProfileById,
                 user,
                 profile
             }}

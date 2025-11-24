@@ -1,4 +1,4 @@
-import { IBoundingBox } from "@/src/models/bbox.model";
+import { TensorBoundingBox } from "@/src/models/bbox.model";
 import { ThemeConfigType } from "@/src/store/theme";
 
 
@@ -11,7 +11,7 @@ export interface ReportFormData {
   issues: ReportIssue[];
   state: string;
   image_url: string;
-  bounding_boxes: IBoundingBox[];
+  bounding_boxes: TensorBoundingBox[];
   latitude: number;
   longitude: number;
 }

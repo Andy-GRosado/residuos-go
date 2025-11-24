@@ -13,12 +13,6 @@ export const profileSchema = yup.object({
         .string()
         .required('El nombre de usuario es obligatorio')
         .min(3, 'El nombre de usuario debe tener al menos 3 caracteres'),
-
-    gender: yup
-        .string()
-        .oneOf(['male', 'female', 'other'], 'El género no es válido')
-        .required('El género es obligatorio'),
-
     phone_number: yup
         .string()
         .matches(/^[0-9]+$/, 'El número de teléfono debe contener solo números')

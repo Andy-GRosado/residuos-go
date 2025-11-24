@@ -10,7 +10,6 @@ export const reportSchema = yup.object({
 
   description: yup
     .string()
-    .optional()
     .max(500, 'La descripción no puede exceder 500 caracteres'),
 
   state: yup
@@ -30,23 +29,20 @@ export const reportSchema = yup.object({
 
   bounding_boxes: yup
     .array(yup.object({
-      x: yup.number().required(),
-      y: yup.number().required(),
-      width: yup.number().required(),
-      height: yup.number().required(),
+      x1: yup.number().required(),
+      y1: yup.number().required(),
+      x2: yup.number().required(),
+      y2: yup.number().required(),
+      score: yup.number().required(),
       label: yup.string().required()
     }))
-    .required('Las bounding boxes son obligatorias'),
+    .required('Los bounding boxes son obligatorias'),
 
   latitude: yup
     .number()
-    .required('La latitud es obligatoria')
-    .min(-90, 'La latitud debe ser entre -90 y 90')
-    .max(90, 'La latitud debe ser entre -90 y 90'),
+    .required('La latitud es obligatoria'),
 
   longitude: yup
     .number()
     .required('La longitud es obligatoria')
-    .min(-180, 'La longitud debe ser entre -180 y 180')
-    .max(180, 'La longitud debe ser entre -180 y 180')
 });

@@ -14,6 +14,7 @@ import { supabase } from "@/src/shared/utils/supabase";
 import { ThemeConfigType } from "@/src/store/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, TouchableOpacity, View } from "react-native";
@@ -282,8 +283,8 @@ export default function ReportContainer(props: ReportContainerProps) {
                         />
 
                         {/* Header Gradient */}
-                        <View
-                            // colors={["rgba(20, 20, 20, 1)", "rgba(0, 0, 0, 0.7)", "transparent"]}
+                        <LinearGradient
+                            colors={["rgba(20, 20, 20, 1)", "rgba(0, 0, 0, 0.7)", "transparent"]}
                             style={{
                                 position: "absolute",
                                 top: 0,
@@ -295,11 +296,11 @@ export default function ReportContainer(props: ReportContainerProps) {
                             }}
                         >
                             <ThemedText type="subtitle">{report.title}</ThemedText>
-                        </View>
+                        </LinearGradient>
 
                         {/* Footer Gradient */}
-                        <View
-                            // colors={["transparent", "rgba(0, 0, 0, 0.7)", "rgba(20, 20, 20, 1)"]}
+                        <LinearGradient
+                            colors={["transparent", "rgba(0, 0, 0, 0.7)", "rgba(20, 20, 20, 1)"]}
                             style={{
                                 position: "absolute",
                                 bottom: 0,
@@ -323,7 +324,7 @@ export default function ReportContainer(props: ReportContainerProps) {
                                     />
                                 ))}
                             </View>
-                        </View>
+                        </LinearGradient>
 
 
                         {/* Participation icon button */}
@@ -394,14 +395,15 @@ export default function ReportContainer(props: ReportContainerProps) {
                             {(report.state == 'resolved' && 'Atendido') || (report.state == 'pending' && 'Pendiente') || 'Sin estado'}
                         </ThemedText>
                     </View>
-                    {
-                        <View style={{ height: 50 }}>
-                            <PrimaryButton style={{ marginLeft: 168, marginTop: -8, display: (report.state == 'resolved') ? "contents" : undefined }} onPress={updateStatus}>
-                                <ThemedText type="bodyBold" style={{display: (report.state == 'resolved') ? "contents" : undefined}}>Marcar como atendido</ThemedText>
-                            </PrimaryButton>
-                        </View>
-
-                    }
+                    <View style={{ height: 50 }}>
+                        {
+                            (reportData && profile && reportData.report.created_by == profile.id) && (
+                                <PrimaryButton style={{ marginLeft: 168, marginTop: -8, display: (report.state == 'resolved') ? "contents" : undefined }} onPress={updateStatus}>
+                                    <ThemedText type="bodyBold" style={{ display: (report.state == 'resolved') ? "contents" : undefined }}>Marcar como atendido</ThemedText>
+                                </PrimaryButton>
+                            )
+                        }
+                    </View>
                 </View>
 
                 {/* Here add the comments section */}

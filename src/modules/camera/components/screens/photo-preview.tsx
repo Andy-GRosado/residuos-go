@@ -1,4 +1,4 @@
-import { IBoundingBox } from "@/src/models/bbox.model";
+import { TensorBoundingBox } from "@/src/models/bbox.model";
 import ThemedText from "@/src/shared/components/themed-text";
 import ThemedView from "@/src/shared/components/themed-view";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,7 +11,7 @@ import { useLocationPermission } from "react-native-vision-camera";
 
 export type PhotoPreviewProps = {
     photoUri: string;
-    boundingBox: IBoundingBox[];
+    boundingBox: TensorBoundingBox[];
     location: Location.LocationObjectCoords,
     onRetake?: () => any;
     onSubmit?: () => any;
@@ -29,13 +29,6 @@ export function PhotoPreview(props: PhotoPreviewProps) {
                 await requestPermission()
             }
 
-            console.log({
-                photoUri: props.photoUri,
-                bbox: JSON.stringify(props.boundingBox),
-                lat: props.location.latitude,
-                lon: props.location.longitude,
-            },)
-
             router.push({
                 pathname: "/(app)/report/create",
                 params: {
@@ -50,7 +43,7 @@ export function PhotoPreview(props: PhotoPreviewProps) {
         }
     }, [])
 
-    console.log(props.photoUri)
+    
     return (
         <ThemedView style={[
             { flex: 1, backgroundColor: "black", paddingHorizontal: 20, }

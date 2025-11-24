@@ -1,60 +1,57 @@
-import { useAuth } from '@/src/shared/hooks/use-auth';
-import { useThemeColors } from '@/src/shared/hooks/use-theme-color';
-import { ThemeConfigType } from '@/src/store/theme';
-import { Redirect, Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { Stack } from 'expo-router';
 
 export default function AppLayout() {
-  const themeColors = useThemeColors() as ThemeConfigType;
-  const { getProfile } = useAuth();
+  // const themeColors = useThemeColors() as ThemeConfigType;
+  // const { getProfile } = useAuth();
 
-  const [isProfileCreated, setIsProfileCreated] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isProfileCreated, setIsProfileCreated] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        const profile = await getProfile();
-        console.log('Profile check in layout:', profile);
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       const profile = await getProfile();
+  //       console.log('Profile check in layout:', profile);
+  //       // setIsProfileCreated(profile != undefined);
+  //       if (profile == undefined) {
+  //         router.push('/(app)/new-profile');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching profile:', error);
+  //       // setIsProfileCreated(false);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-        setIsProfileCreated(!!profile);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        setIsProfileCreated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+  //   fetchProfile();
+  // }, []);
 
   // Estado de carga
-  if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: themeColors.background.default,
-        }}
-      >
-        <ActivityIndicator
-          size="large"
-          color={themeColors.tint}
-          style={{ marginTop: 30 }}
-        />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View
+  //       style={{
+  //         flex: 1,
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         backgroundColor: themeColors.background.default,
+  //       }}
+  //     >
+  //       <ActivityIndicator
+  //         size="large"
+  //         color={themeColors.tint}
+  //         style={{ marginTop: 30 }}
+  //       />
+  //     </View>
+  //   );
+  // }
 
   // Si no tiene perfil creado, redirigir a new-profile
-  if (isProfileCreated === false) {
-    return <Redirect href="/(app)/new-profile" />;
-  }
+  // if (!isProfileCreated) {
+  //   return <Redirect href="/(app)/new-profile" />;
+  // }
 
   // Si tiene perfil, mostrar las pantallas normales de la app
   return (

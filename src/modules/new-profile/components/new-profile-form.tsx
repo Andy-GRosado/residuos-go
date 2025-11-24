@@ -7,8 +7,11 @@ import { ThemedTextBar } from "@/src/shared/components/themed-text-bar";
 import { useAppForm } from "@/src/shared/hooks/use-app-form";
 import { useAuth } from "@/src/shared/hooks/use-auth";
 import { useModal } from "@/src/shared/hooks/use-modal";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import { View, ViewProps } from "react-native";
 import { ProfileFormData, profileSchema } from "../schemas/new-profile.schema";
+import { ProfilePhotoPicker } from "./profile-photo-picker";
 
 
 export type NewProfileFormProps = {
@@ -17,9 +20,12 @@ export type NewProfileFormProps = {
 }
 
 export function NewProfileForm(props: NewProfileFormProps) {
-    const { getProfile, createProfile } = useAuth();
+    const { getUserProfile: getProfile, createProfile } = useAuth();
     const { showModal } = useModal();
-    
+
+    const [gender, setGender] = useState<"M" | "F">("M");
+    const [profileUrl, setProfileUrl] = useState<string>("");
+
     const {
         control,
         handleSubmit,
@@ -28,7 +34,6 @@ export function NewProfileForm(props: NewProfileFormProps) {
         names: '',
         last_names: '',
         username: '',
-        gender: "male" as 'male' | 'female' | 'other',
         phone_number: '',
         photo_url: '',
     })
@@ -39,9 +44,9 @@ export function NewProfileForm(props: NewProfileFormProps) {
                 data.names,
                 data.last_names,
                 data.username,
-                data.gender,
+                gender,
                 Number(data.phone_number),
-                data.photo_url ?? ''
+                profileUrl,
             )
             await getProfile()
             props.handleAfterCreateProfile && props.handleAfterCreateProfile();
@@ -53,13 +58,17 @@ export function NewProfileForm(props: NewProfileFormProps) {
     const onSubmit = handleSubmit(onCreateProfile);
 
     return (
-        <View 
+        <View
             {...props.containerProps}
             style={[
                 { gap: 12, padding: 20 },
                 props.containerProps?.style
             ]}
         >
+            <ProfilePhotoPicker
+                onChangeGender={setGender}
+                onChangeProfileUrl={setProfileUrl}
+            />
             {/* Name */}
             <ControlledInput
                 name="names"
@@ -87,15 +96,6 @@ export function NewProfileForm(props: NewProfileFormProps) {
                 <BasicInput></BasicInput>
             </ControlledInput>
 
-            {/* Gender */}
-            <ControlledInput
-                name="gender"
-                control={control}
-                placeholder="Gender"
-            >
-                <BasicInput></BasicInput>
-            </ControlledInput>
-
             {/* Phone number */}
             <ControlledInput
                 name="phone_number"
@@ -113,8 +113,8 @@ export function NewProfileForm(props: NewProfileFormProps) {
 
             <View>
                 <ThemedText>
-                    (*) Todo reporte de acumulación de residuos contribuye a
-                    reducir su presencia
+                    <Ionicons name="leaf" color={"green"} size={20} style={{ paddingRight: 8 }} />
+                    Todo reporte de acumulación de residuos contribuye a reducir su presencia
                 </ThemedText>
             </View>
         </View>

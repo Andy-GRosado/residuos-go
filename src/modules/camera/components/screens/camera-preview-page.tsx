@@ -1,4 +1,4 @@
-import { IBoundingBox } from "@/src/models/bbox.model";
+import { TensorBoundingBox } from "@/src/models/bbox.model";
 import ThemedText from "@/src/shared/components/themed-text";
 import ThemedView from "@/src/shared/components/themed-view";
 
@@ -12,7 +12,7 @@ import { BoundingBoxOverlay } from "../bounding-box-overlay";
 import { IconButtonWrapper } from "../icon-button-wrapper";
 
 export type CameraPreviewPageProps = {
-    eventTakePhoto: (photoUri: string, boundingBox: IBoundingBox[]) => any
+    eventTakePhoto: (photoUri: string, boundingBox: TensorBoundingBox[]) => any
 }
 
 
@@ -26,7 +26,7 @@ export function CameraPreviewPage(props: CameraPreviewPageProps) {
     const { model } = useYoloModel();
 
     const cameraRef = useRef<Camera>(null)
-    const [detections, setDetections] = useState<IBoundingBox[]>([])
+    const [detections, setDetections] = useState<TensorBoundingBox[]>([])
     const [enabledTakePhotoButton, setEnabledTakePhotoButton] = useState<boolean>(false);
     const resizer = VisionCameraProxy.initFrameProcessorPlugin('resize', {
         scale: {
@@ -56,12 +56,12 @@ export function CameraPreviewPage(props: CameraPreviewPageProps) {
             if (!photo) {
                 return;
             }
-            
+
             props.eventTakePhoto(`file://${photo.path}`, detections)
         }
     }, [cameraRef, enabledTakePhotoButton, detections])
 
-    const handleUpdateDetections = Worklets.createRunOnJS((detections: IBoundingBox[]) => {
+    const handleUpdateDetections = Worklets.createRunOnJS((detections: TensorBoundingBox[]) => {
         setDetections(detections);
     })
 
@@ -100,7 +100,7 @@ export function CameraPreviewPage(props: CameraPreviewPageProps) {
                     const yoloOutput: Float32Array = outputs[0] as Float32Array
 
                     // PROCESAR DETECCIONES
-                    const newDetections: IBoundingBox[] = [];
+                    const newDetections: TensorBoundingBox[] = [];
                     const scoreThreshold = 0.2;
 
                     for (let i = 0; i < 300; i++) {
@@ -111,17 +111,13 @@ export function CameraPreviewPage(props: CameraPreviewPageProps) {
                             continue;
                         }
 
-                        const x1 = yoloOutput[baseIndex];
-                        const y1 = yoloOutput[baseIndex + 1];
-                        const x2 = yoloOutput[baseIndex + 2];
-                        const y2 = yoloOutput[baseIndex + 3];
                         const class_id = Math.round(yoloOutput[baseIndex + 5]);
 
                         newDetections.push({
-                            x: Math.max(0, Math.min(1, x1)),
-                            y: Math.max(0, Math.min(1, y1)),
-                            width: Math.max(0, Math.min(1, x2 - x1)),
-                            height: Math.max(0, Math.min(1, y2 - y1)),
+                            x1: yoloOutput[baseIndex],
+                            y1: yoloOutput[baseIndex + 1],
+                            x2: yoloOutput[baseIndex + 2],
+                            y2: yoloOutput[baseIndex + 3],
                             score: confidence,
                             label: CLASS_NAMES[class_id] || `Class ${class_id}`
                         });
@@ -165,7 +161,11 @@ export function CameraPreviewPage(props: CameraPreviewPageProps) {
                 />
 
                 {/* Bounding Box overlay - MISMO TAMAÑO QUE LA CÁMARA */}
-                <BoundingBoxOverlay detections={detections} />
+                {
+                    format && (
+                        <BoundingBoxOverlay imageDimensions={{ width: format.photoWidth, height: format.photoHeight }} detections={detections} />
+                    )
+                }
             </View>
 
             <ThemedView

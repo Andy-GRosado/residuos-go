@@ -1,6 +1,8 @@
-import { IBoundingBox } from '@/src/models/bbox.model';
+import { TensorBoundingBox } from '@/src/models/bbox.model';
 import { ModelClass } from '@/src/store/yolo/labels';
-import { StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
+import { BoundingBoxTransformer, IContainerBoundingBox, IContainerDimensions } from '../utils/utils';
 
 const CONF_CLASSES: Record<ModelClass, { color: string, icon: string }> = {
   'bag': { color: 'blue', icon: 'asdas' },
@@ -9,41 +11,83 @@ const CONF_CLASSES: Record<ModelClass, { color: string, icon: string }> = {
   'trash': { color: 'pink', icon: 'asdas' },
 };
 
-export function BoundingBoxOverlay({ detections }: { detections: IBoundingBox[] }) {
-  console.log(detections);
+
+export type BoundingBoxOverlayProps = {
+  detections: TensorBoundingBox[]
+  imageDimensions: IContainerDimensions,
+}
+
+export function BoundingBoxOverlay(props: BoundingBoxOverlayProps) {
+  const containerRef = useRef<View>(null);
+  const [boundingBoxTransformer, setBoundingBoxTransformer] = useState<
+    ((norm_x1: number, norm_y1: number, norm_x2: number, norm_y2: number) => IContainerBoundingBox) | null
+  >(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.measure((x, y, width, height) => {
+        ;
+      });
+    }
+  }, []);
+
+  const updateDimensions = useCallback((event: LayoutChangeEvent) => {
+    if (containerRef.current) {
+      event.currentTarget.measure(((x, y, width, height) => {
+        setBoundingBoxTransformer(() =>
+          BoundingBoxTransformer({ width: props.imageDimensions.width, height: props.imageDimensions.height }, { width, height },)
+        );
+      }))
+    }
+  }, [])
+
   return (
-    <View style={[StyleSheet.absoluteFill]} pointerEvents="none">
-      {detections.map((detection, index) => (
-        <View
-          key={index}
-          style={{
-            position: 'absolute',
-            top: `${detection.y * 100 + 2}%`,
-            left: `${detection.x * 100}%`,
-            width: `${detection.width * 100}%`,
-            height: `${detection.height * 100}%`,
-            borderWidth: 2,
-            borderColor: CONF_CLASSES[detection.label] ? CONF_CLASSES[detection.label].color : '#00FF00',
-            backgroundColor: 'transparent',
-          }}
-        >
+    <View
+      ref={containerRef}
+      style={[StyleSheet.absoluteFill]}
+      pointerEvents="none"
+      onLayout={updateDimensions}
+    >
+      {boundingBoxTransformer != null && props.detections.length > 0 && props.detections.map((detection: TensorBoundingBox, index) => {
+        const classConfig = CONF_CLASSES[detection.label];
+        const borderColor = classConfig ? classConfig.color : '#00FF00';
+        const backgroundColor = classConfig ? classConfig.color : 'rgba(0, 255, 0, 0.7)';
+
+        const boundingBox = boundingBoxTransformer(detection.x1, detection.y1, detection.x2, detection.y2);
+
+        return (
           <View
+            key={`${detection.label}-${index}-${detection.x1}-${detection.y1}`}
             style={{
               position: 'absolute',
-              left: 4,
-              top: -12,
-              backgroundColor: CONF_CLASSES[detection.label] ? CONF_CLASSES[detection.label].color : 'rgba(0, 255, 0, 0.7)',
-              paddingHorizontal: 4,
-              paddingVertical: 2,
-              borderRadius: 4,
+              left: boundingBox.x,
+              top: boundingBox.y,
+              width: boundingBox.width,
+              height: boundingBox.height,
+              borderWidth: 2,
+              borderColor: borderColor,
+              backgroundColor: 'transparent',
             }}
           >
-            <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>
-              {detection.label} ({(detection.score * 100).toFixed(1)}%)
-            </Text>
+            <View
+              style={{
+                position: 'absolute',
+                left: 4,
+                top: -20, // Increased to ensure it's above the box
+                backgroundColor: backgroundColor,
+                paddingHorizontal: 4,
+                paddingVertical: 2,
+                borderRadius: 4,
+                minWidth: 80, // Ensure minimum width for better readability
+              }}
+            >
+              <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
+                {detection.label} ({(detection.score * 100).toFixed(1)}%)
+              </Text>
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }

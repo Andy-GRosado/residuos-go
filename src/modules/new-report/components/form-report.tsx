@@ -10,8 +10,8 @@ import { ReportIssues } from './report-issues';
 
 interface ReportFormProps {
   control: any; // Usamos any temporalmente para evitar conflictos de tipos
-  onSubmit: () => void;
-  onCancel: () => void;
+  onSubmit: () => any;
+  onCancel: () => any;
   isSubmitting: boolean;
   photoUri: string;
   themeColors: ThemeConfigType;
@@ -51,6 +51,7 @@ export default function ReportForm({
 
       {/* Descripción */}
       <View>
+        
         <ThemedText type="bodyBold" style={{ marginBottom: 8 }}>
           Descripción
         </ThemedText>

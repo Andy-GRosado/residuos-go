@@ -1,5 +1,5 @@
 {
-  "name": "residuos-go-v3",
+  "name": "residuos-go",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
