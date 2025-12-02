@@ -96,6 +96,12 @@ export function CameraPreviewPage(props: CameraPreviewPageProps) {
                         dataType: 'float32',
                     }) as ArrayBuffer);
 
+                    // console.log(resized_image);
+
+                    // const normalized_image = resized_image.map(value => value / 255.0);
+
+                    console.log("First values", [resized_image[0], resized_image[1]]);
+
                     const outputs = model.runSync([resized_image]);
                     const yoloOutput: Float32Array = outputs[0] as Float32Array
 

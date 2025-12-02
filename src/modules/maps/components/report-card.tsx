@@ -53,7 +53,7 @@ export function ReportCard(props: ReportCardProps) {
             onPress={() => { router.push(`/(app)/report/${props.report.id}`) }}
         >
             {/* Contenido de texto a la izquierda */}
-            <View style={{ marginRight: 12, justifyContent: 'space-between', gap: 8, flexShrink: 1 }} >
+            <View style={{ width: 'auto', marginRight: 12, justifyContent: 'space-between', gap: 8, display: 'flex', flexShrink: 1 }} >
                 <View style={{ gap: 4 }}>
                     <ThemedText type="bodyBold" numberOfLines={1} style={{ borderBottomWidth: 1, borderBottomColor: themeColors.text[500] }}>
                         {props.report.title}

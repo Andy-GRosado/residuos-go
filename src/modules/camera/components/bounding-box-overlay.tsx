@@ -53,6 +53,9 @@ export function BoundingBoxOverlay(props: BoundingBoxOverlayProps) {
         const borderColor = classConfig ? classConfig.color : '#00FF00';
         const backgroundColor = classConfig ? classConfig.color : 'rgba(0, 255, 0, 0.7)';
 
+        if (detection.x1 < detection.x2 && detection.y1 < detection.y2) {
+          console.log("correct points");
+        }
         const boundingBox = boundingBoxTransformer(detection.x1, detection.y1, detection.x2, detection.y2);
 
         return (
@@ -60,8 +63,8 @@ export function BoundingBoxOverlay(props: BoundingBoxOverlayProps) {
             key={`${detection.label}-${index}-${detection.x1}-${detection.y1}`}
             style={{
               position: 'absolute',
-              left: boundingBox.x,
               top: boundingBox.y,
+              left: boundingBox.x,
               width: boundingBox.width,
               height: boundingBox.height,
               borderWidth: 2,

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "residuos-go",
-    "slug": "residuos-go",
+    "name": "residuos-go-v3",
+    "slug": "residuos-go-v3",
     "version": "1.0.0",
     "platforms": ["android"],
     "orientation": "portrait",
@@ -26,10 +26,11 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBu82dmJBu_7BvQMvVtstazBqvguR4sW78"
+          "apiKey": "process.env.GOOGLE_MAPS_API_KEY"
         }
       },
-      "package": "com.tony853.residuosgo"
+      "softwareKeyboardLayoutMode": "resize",
+      "package": "com.tony853.residuosgov3"
     },
     "plugins": [
       "expo-router",

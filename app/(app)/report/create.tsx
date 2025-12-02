@@ -7,10 +7,10 @@ export default function ReportCreateScreen() {
     const { photoUri, bbox, location } = useLocalSearchParams();
 
     return (
-        <NewReportContainer 
-            photoUri={photoUri as string} 
-            boundingBox={JSON.parse(bbox as string) as TensorBoundingBox[]} 
-            location={JSON.parse(location as string) as Location.LocationObjectCoords} 
+        <NewReportContainer
+            photoUri={photoUri as string}
+            boundingBox={JSON.parse(bbox as string) as TensorBoundingBox[]}
+            location={JSON.parse(location as string) as Location.LocationObjectCoords}
         />
     )
 }

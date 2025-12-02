@@ -39,7 +39,7 @@ export function ReportComments(props: ReportCommentsProps) {
                     .eq("report_id", id)
                     .order('created_at', { ascending: false }),
             ]);
-            
+
             if (comments.error) { throw comments.error; };
             return comments.data;
         } catch (error: any) {
@@ -64,7 +64,7 @@ export function ReportComments(props: ReportCommentsProps) {
                 .single();
 
             if (error) throw error;
-            
+
             setComments(prev => [data, ...prev]);
             setNewComment('');
         } catch (error: any) {
@@ -80,7 +80,7 @@ export function ReportComments(props: ReportCommentsProps) {
 
 
     useEffect(() => {
-        (async() => {
+        (async () => {
             const comments = await fetchAllData(props.reportId);
             setComments(comments);
             // console.log(comments);
@@ -118,6 +118,7 @@ export function ReportComments(props: ReportCommentsProps) {
                     returnKeyType="send"
                     onSubmitEditing={() => postComment(newComment)}
                 />
+
                 <PrimaryButton
                     onPress={() => postComment(newComment)}
                     disabled={isSubmittingComment || !newComment.trim()}
@@ -132,34 +133,34 @@ export function ReportComments(props: ReportCommentsProps) {
 
             {/* Comments List */}
             <View style={{ gap: 12 }}>
-                        {comments.map((comment: IComment & IFromSupabase & ICreatedBy) => (
-                            <View key={comment.id} style={{ flexDirection: "row", gap: 8 }}>
-                                <Image
-                                    source={{ uri: comment.created_by.photo_url || "https://avatar.iran.liara.run/public/12" }}
-                                    style={{
-                                        width: 32,
-                                        height: 32,
-                                        borderWidth: 1,
-                                        borderColor: themeColors.text[500],
-                                        borderRadius: 16
-                                    }}
-                                />
-                                <View style={{ flex: 1 }}>
-                                    <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
-                                        <ThemedText type="bodyBold">
-                                            @{comment.created_by.username}
-                                        </ThemedText>
-                                        <ThemedText type="caption">
-                                            {formatUTCDateToTimePassed(comment.created_at)}
-                                        </ThemedText>
-                                    </View>
-                                    <ThemedText style={{ color: themeColors.text[400] }}>
-                                        {comment.content}
-                                    </ThemedText>
-                                </View>
+                {comments.map((comment: IComment & IFromSupabase & ICreatedBy) => (
+                    <View key={comment.id} style={{ flexDirection: "row", gap: 8 }}>
+                        <Image
+                            source={{ uri: comment.created_by.photo_url || "https://avatar.iran.liara.run/public/12" }}
+                            style={{
+                                width: 32,
+                                height: 32,
+                                borderWidth: 1,
+                                borderColor: themeColors.text[500],
+                                borderRadius: 16
+                            }}
+                        />
+                        <View style={{ flex: 1 }}>
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                                <ThemedText type="bodyBold">
+                                    @{comment.created_by.username}
+                                </ThemedText>
+                                <ThemedText type="caption">
+                                    {formatUTCDateToTimePassed(comment.created_at)}
+                                </ThemedText>
                             </View>
-                        ))}
+                            <ThemedText style={{ color: themeColors.text[400] }}>
+                                {comment.content}
+                            </ThemedText>
+                        </View>
                     </View>
+                ))}
+            </View>
         </View>
     )
 }

@@ -36,7 +36,7 @@ export function LoginContainer() {
                 <LoginForm />
 
                 {/* Separador */}
-                <View style={styles.separatorContainer}>
+                {/* <View style={styles.separatorContainer}>
                     <View
                         style={{
                             ...styles.separatorLine,
@@ -50,10 +50,10 @@ export function LoginContainer() {
                             backgroundColor: themeColors.text.default,
                         }}
                     />
-                </View>
+                </View> */}
 
                 {/* Botones de redes sociales */}
-                <View style={styles.socialButtonsContainer}>
+                {/* <View style={styles.socialButtonsContainer}>
                     <Pressable
                         style={styles.socialButton}
                         onPress={handleGoogleLogin}
@@ -75,7 +75,7 @@ export function LoginContainer() {
                             Google
                         </ThemedText>
                     </Pressable>
-                </View>
+                </View> */}
 
                 <View
                     style={{

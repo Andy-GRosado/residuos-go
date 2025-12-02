@@ -21,7 +21,7 @@ export interface IContainerBoundingBox {
  * 
  * @returns A functions that calculates the bounding box position relative to that container and image dimensions
  */
-export function BoundingBoxTransformer(image_dimensions: IContainerDimensions, container_dimensions: IContainerDimensions): 
+export function BoundingBoxTransformer(image_dimensions: IContainerDimensions, container_dimensions: IContainerDimensions):
     (norm_x1: number, norm_y1: number, norm_x2: number, norm_y2: number) => IContainerBoundingBox {
 
     const scaleX = container_dimensions.width / image_dimensions.width;
@@ -38,18 +38,31 @@ export function BoundingBoxTransformer(image_dimensions: IContainerDimensions, c
     const offsetX = (container_dimensions.width - displayedWidth) / 2;
     const offsetY = (container_dimensions.height - displayedHeight) / 2;
 
-    return (norm_x1: number, norm_y1: number, norm_x2: number, norm_y2: number) => {
-        const x1 = offsetX + (norm_x1 * image_dimensions.width * scale);
-        const y1 = offsetY + (norm_y1 * image_dimensions.height * scale);
-        const x2 = offsetX + (norm_x2 * image_dimensions.width * scale);
-        const y2 = offsetY + (norm_y2 * image_dimensions.height * scale);
+    console.log("Container dimensions", container_dimensions);
+    console.log("Container dimensions", image_dimensions);
 
-        return {
+    return (norm_x1: number, norm_y1: number, norm_x2: number, norm_y2: number) => {
+        const x1 = offsetX + (norm_x1 * displayedWidth);
+        const x2 = offsetX + (norm_x2 * displayedWidth);
+        const y1 = offsetY + (norm_y1 * displayedHeight);
+        const y2 = offsetY + (norm_y2 * displayedHeight);
+
+        const response = {
             x: x1,
             y: y1,
             width: x2 - x1,
-            height: y2 - y1
+            height: y2 - y1,
         };
+
+        if (x2 > displayedWidth) {
+            console.log(`x2 : ${x2} > ${displayedWidth} : ${JSON.stringify(response)}`);
+        }
+
+        if (y2 > displayedHeight) {
+            console.log(`y2: ${y2} > ${displayedHeight} : ${JSON.stringify(response)}`);
+        }
+
+        return response;
     }
 }
 

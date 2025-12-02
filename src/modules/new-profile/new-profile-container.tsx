@@ -9,10 +9,10 @@ export function NewProfileContainer() {
     return (
         <ThemedView style={{ flex: 1 }}>
             <ThemedLogoHeaderBar title="Vamos a crear un perfil!" />
-            <NewProfileForm 
-                handleAfterCreateProfile={() => { 
+            <NewProfileForm
+                handleAfterCreateProfile={() => {
                     router.replace("/(app)/map");
-                }} 
+                }}
             />
         </ThemedView>
     );
